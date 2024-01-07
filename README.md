@@ -1,0 +1,2 @@
+# inventory-api
+# yubu-inventory
