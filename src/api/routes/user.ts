@@ -11,8 +11,24 @@ export default class UserRoutes extends CommonRoutesConfig {
     }
 
     configureRoutes() {
+        // Read
         this.app.route('/users').get(UserController.getUsers);
+        this.app.route('/users/:id').get(UserController.getUserById);
+
+        // Create
+        this.app.route('/users').post(UserController.createUser);
+
+        // Update
+        this.app.route('/users/:id').put(UserController.updateUser);
+
+        // Delete
+        this.app.route('/users/:id').delete(UserController.deleteUser);
+
+
 
         return this.app;
     }
 }
+
+
+
