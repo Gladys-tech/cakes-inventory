@@ -1,5 +1,6 @@
 import 'reflect-metadata';
-import { DataSource } from 'typeorm';
+import { ConnectionOptions, DataSource } from 'typeorm';
+import { User } from './models/user';
 
 export const dataSource = new DataSource({
     type: 'postgres',
@@ -9,13 +10,18 @@ export const dataSource = new DataSource({
     password: `${process.env.DB_PASSWORD}`,
     database: process.env.DB_DATABASE,
     synchronize: process.env.NODE_ENV === 'development' ? true : false,
-    logging: false,
+    logging: true,
     entities: [
+        User,
         `${__dirname}/models/*.ts`,
         `${__dirname}/models/*.js`,
+        `${__dirname}/models/User.ts`,
         `${__dirname}/models/abstracts/*.js`,
         `${__dirname}/models/abstracts/*.ts`,
     ],
     migrations: ['src/migrations/**/*{.ts,.js}'],
     subscribers: [],
-});
+    
+}as ConnectionOptions);
+
+

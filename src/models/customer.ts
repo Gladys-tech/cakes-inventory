@@ -12,8 +12,6 @@ import { SoftDeletableEntity } from './abstracts/soft-deleteable';
 import { DbAwareColumn } from '../utils/db-aware-column';
 import { generateEntityId } from '../utils/generate-entity-id';
 
-
-
 /**
  * @schema customer
  *
@@ -24,7 +22,7 @@ import { generateEntityId } from '../utils/generate-entity-id';
  * x-resourceId: `customer`
  *
  * properties:
- *     
+ *
  *     - firstName:
  *         type: `string`
  *         description: The first name of the customer.
@@ -46,7 +44,7 @@ import { generateEntityId } from '../utils/generate-entity-id';
  *     - isEmailVerified:
  *         type: `boolean`
  *         description: Whether the customer has verified their email address.
- *  * 
+ *  *
  */
 @Entity()
 export class Customer extends SoftDeletableEntity {
@@ -65,11 +63,10 @@ export class Customer extends SoftDeletableEntity {
 
     @Column({ nullable: true })
     location: string;
-    
+
     @Column({ nullable: true })
     telphone: string;
 
     @Column({ nullable: true, default: false })
     isEmailVerified: boolean;
-    
 }

@@ -1,5 +1,9 @@
 import { Request, Response } from 'express';
 import { UserService } from '../services';
+import { generateJwtToken } from '../utils/jwtUtils';
+import { hashPassword, comparePasswords } from '../utils/passwordUtils';
+import { sendWelcomeEmail, sendAccountActivationEmail } from '../utils/emailUtils';
+
 
 class UserController {
     //getting all users
@@ -45,7 +49,7 @@ class UserController {
         }
     };
 
-    // creating a user 
+    // creating a user
     public createUser = async (req: Request, res: Response) => {
         const userData = req.body;
 
@@ -120,9 +124,96 @@ class UserController {
         }
     };
 
+
+    // user signup
+    public signup = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { name, email, password } = req.body;
+            const hashedPassword = await hashPassword(password);
+
+            const newUser = await UserService.createUser({
+                name,
+                email: email,
+                password: hashedPassword,
+            });
+
+            // Send welcome email
+            // await sendWelcomeEmail(newUser.email);
+
+            res.status(201).json({
+                status: 'CREATED',
+                user: newUser,
+            });
+        } catch (error) {
+            console.error('Error creating user:', error);
+            res.status(500).json({
+                status: 'INTERNAL_SERVER_ERROR',
+                message: 'Error creating user.',
+            });
+        }
+    };
+
+    // user login
+    public login = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { email, password } = req.body;
+            const user = await UserService.getUserByEmail(email);
+
+            if (!user) {
+                res.status(401).json({
+                    status: 'UNAUTHORIZED',
+                    message: 'User not found with the provided email.',
+                });
+                return;
+            }
+
+            if (!user.password) {
+                // Handle missing password
+                res.status(401).json({
+                    status: 'UNAUTHORIZED',
+                    message: 'User password is not available.',
+                });
+                return;
+            }
+
+            console.log('password:', password);
+
+            const userPassword = user.password;
+
+            if (!userPassword) {
+                res.status(500).json({
+                    status: 'INTERNAL_SERVER_ERROR',
+                    message: 'User password is not available.',
+                });
+                return;
+            }
+
+            const isPasswordValid = await comparePasswords(password, userPassword);
+
+            if (!isPasswordValid) {
+                res.status(401).json({
+                    status: 'UNAUTHORIZED',
+                    message: 'Invalid password.',
+                });
+                return;
+            }
+
+            const token = generateJwtToken(user);
+
+            res.status(200).json({
+                status: 'OK',
+                token,
+            });
+        } catch (error) {
+            console.error('Error during login:', error);
+            res.status(500).json({
+                status: 'INTERNAL_SERVER_ERROR',
+                message: 'Error during login.',
+            });
+        }
+    };
+
+
 }
 
 export default new UserController();
-
-
-

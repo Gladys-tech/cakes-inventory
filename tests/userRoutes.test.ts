@@ -1,6 +1,8 @@
 import supertest from 'supertest';
 import express, { Application } from 'express';
 import { UserRoutes } from '../src/api/routes';
+import { User } from '../src/models/user';
+
 
 // Create a mock Express app instance for testing
 const testApp: Application = express();
@@ -22,40 +24,34 @@ describe('User Routes', () => {
     });
 
     it('should create a user', async () => {
-        const response = await supertest(app)
-            .post('/users')
-            .send({
-                firstName: 'John',
-                lastName: 'Doe',
-                email: 'john.doe@example.com',
-                image: 'profile.jpg',
-                password: 'password123',
-                role: 'user',
-                isEmailVerified: false,
-                emailVerificationToken: 'verification_token',
-                agreeToTerms: true,
-                rememberMe: false,
-                apiToken: 'api_token',
-                resetToken: 'reset_token',
-                resetTokenExpires: new Date(),
-                // Add other required properties
-            });
-    
+        const response = await supertest(app).post('/users').send({
+            firstName: 'John',
+            lastName: 'Doe',
+            email: 'john.doe@example.com',
+            image: 'profile.jpg',
+            password: 'password123',
+            role: 'user',
+            isEmailVerified: false,
+            emailVerificationToken: 'verification_token',
+            agreeToTerms: true,
+            rememberMe: false,
+            apiToken: 'api_token',
+            resetToken: 'reset_token',
+            resetTokenExpires: new Date(),
+            // Add other required properties
+        });
 
-            expect(response.status).toBe(201);
-            expect(response.body.status).toBe('CREATED');
-            expect(response.body.user).toHaveProperty('id');
+        expect(response.status).toBe(201);
+        expect(response.body.status).toBe('CREATED');
+        expect(response.body.user).toHaveProperty('id');
     });
-
 
     it('should update a user', async () => {
         // Replace '1' with an existing user ID
-        const response = await supertest(app)
-            .put('/users/1')
-            .send({
-                firstName: 'UpdatedFirstName',
-                // Add other properties to update
-            });
+        const response = await supertest(app).put('/users/1').send({
+            firstName: 'UpdatedFirstName',
+            // Add other properties to update
+        });
 
         expect(response.status).toBe(200);
         expect(response.body.status).toBe('OK');
@@ -71,5 +67,5 @@ describe('User Routes', () => {
         expect(response.body.status).toBe('OK');
         expect(response.body.message).toContain('deleted');
     });
-
 });
+

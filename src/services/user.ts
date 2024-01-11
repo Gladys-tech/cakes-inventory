@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { UserRepository } from '../repositories';
 import { User } from '../models/user';
-
+import { hashPassword, comparePasswords } from '../utils/passwordUtils';
 
 class UserService {
     private readonly userRepository: typeof UserRepository;
@@ -18,17 +18,15 @@ class UserService {
         return users;
     };
 
-
-
     /**
      * Retrieve a user by ID
      */
     public getUserById = async (userId: string): Promise<User | null> => {
-        const user = await this.userRepository.findOne({ where: { id: userId } });
+        const user = await this.userRepository.findOne({
+            where: { id: userId },
+        });
         return user || null;
     };
-
-   
 
     /**
      * Create a new user
@@ -54,19 +52,22 @@ class UserService {
             resetToken: userData.resetToken,
             resetTokenExpires: userData.resetTokenExpires,
         });
-    
+
         await this.userRepository.save(newUser);
-    
+
         return newUser;
     };
-    
 
-
-     /**
+    /**
      * Update a user by ID
      */
-     public updateUser = async (userId: string, userData: any): Promise<User | null> => {
-        const existingUser = await this.userRepository.findOne({ where: { id: userId } });
+    public updateUser = async (
+        userId: string,
+        userData: any
+    ): Promise<User | null> => {
+        const existingUser = await this.userRepository.findOne({
+            where: { id: userId },
+        });
 
         if (!existingUser) {
             return null; // User not found
@@ -78,13 +79,13 @@ class UserService {
         return updatedUser;
     };
 
-
-
     /**
      * Delete a user by ID
      */
     public deleteUser = async (userId: string): Promise<User | null> => {
-        const userToDelete = await this.userRepository.findOne({ where: { id: userId } });
+        const userToDelete = await this.userRepository.findOne({
+            where: { id: userId },
+        });
 
         if (!userToDelete) {
             return null; // User not found
@@ -94,7 +95,21 @@ class UserService {
 
         return userToDelete;
     };
-}
 
+    /**
+     * Get user by email
+     */
+    public getUserByEmail = async (
+        email: string
+    ): Promise<User | null> => {
+        const user = await this.userRepository.findOne({
+            where: [
+                { email: email },
+            ],
+        });
+        return user || null;
+    };
+
+}
 
 export default new UserService();

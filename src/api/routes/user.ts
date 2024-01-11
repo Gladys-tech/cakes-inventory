@@ -25,10 +25,22 @@ export default class UserRoutes extends CommonRoutesConfig {
         this.app.route('/users/:id').delete(UserController.deleteUser);
 
 
+        // Signup
+        this.app.route('/signup').post(
+            body('name').exists().notEmpty(),
+            body('email').exists().notEmpty(),
+            body('password').exists().notEmpty(),
+            UserController.signup
+        );
+
+        // Login
+        this.app.route('/login').post(
+            body('email').exists().notEmpty(),
+            body('password').exists().notEmpty(),
+            UserController.login
+        );
+
 
         return this.app;
     }
 }
-
-
-

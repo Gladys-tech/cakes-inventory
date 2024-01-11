@@ -7,6 +7,7 @@ import {
     ManyToOne,
     OneToOne,
     JoinColumn,
+    PrimaryGeneratedColumn,
 } from 'typeorm';
 import { SoftDeletableEntity } from './abstracts/soft-deleteable';
 import { DbAwareColumn } from '../utils/db-aware-column';
@@ -80,6 +81,9 @@ export enum UserRole {
  */
 @Entity()
 export class User extends SoftDeletableEntity {
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
+  
     @Column({ nullable: true })
     firstName: string;
 

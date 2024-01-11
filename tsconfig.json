@@ -1,17 +1,17 @@
 {
-    "compilerOptions": {
-        "lib": ["es5", "es6"],
-        "target": "es6",
-        "module": "commonjs",
-        "types": ["node", "jest"],
-        "moduleResolution": "node",
-        "outDir": "./dist",
-        "emitDecoratorMetadata": true,
-        "experimentalDecorators": true,
-        "sourceMap": true,
-        "esModuleInterop": true,
-        "skipLibCheck": true
-    },
-    "include": ["src/**/*.ts"],
-    "exclude": ["node_modules", "build", "dist", "coverage", ".next"]
+  "compilerOptions": {
+      "lib": ["es5", "es6"],
+      "target": "es2017",
+      "module": "commonjs",
+      "types": ["node", "jest"],
+      "moduleResolution": "node",
+      "outDir": "./dist",
+      "emitDecoratorMetadata": true,
+      "experimentalDecorators": true,
+      "sourceMap": true,
+      "esModuleInterop": true,
+      "skipLibCheck": true
+  },
+  "include": ["src/**/*.ts", "tests/**/*.ts", "src/utils/emailConfig.ts"],
+  "exclude": ["node_modules", "build", "dist", "coverage", ".next"]
 }

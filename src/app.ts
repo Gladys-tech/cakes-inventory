@@ -11,8 +11,8 @@ import { Logger } from '../logger';
 const app: Application = express();
 const routes: Array<CommonRoutesConfig> = [];
 const limiter = rateLimit({
-    windowMs: parseInt(process.env.RATE_LIMIT_WINDOW), // Max 15 minutes
-    max: parseInt(process.env.RATE_LIMIT), // limit each IP to 15 requests per windowMs
+    // windowMs: parseInt(process.env.RATE_LIMIT_WINDOW), // Max 15 minutes
+    // max: parseInt(process.env.RATE_LIMIT), // limit each IP to 15 requests per windowMs
     standardHeaders: true,
     legacyHeaders: false,
     message: async (req: Request, res: Response) => {
