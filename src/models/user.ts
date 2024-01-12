@@ -83,7 +83,7 @@ export enum UserRole {
 export class User extends SoftDeletableEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
-  
+
     @Column({ nullable: true })
     firstName: string;
 
@@ -97,7 +97,7 @@ export class User extends SoftDeletableEntity {
     @Column({ nullable: true })
     image: string;
 
-    @Column({ nullable: true, select: false })
+    @Column({ nullable: true })
     password: string;
 
     @DbAwareColumn({

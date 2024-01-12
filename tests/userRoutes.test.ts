@@ -3,7 +3,6 @@ import express, { Application } from 'express';
 import { UserRoutes } from '../src/api/routes';
 import { User } from '../src/models/user';
 
-
 // Create a mock Express app instance for testing
 const testApp: Application = express();
 
@@ -68,4 +67,3 @@ describe('User Routes', () => {
         expect(response.body.message).toContain('deleted');
     });
 });
-

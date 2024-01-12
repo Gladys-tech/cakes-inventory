@@ -37,12 +37,13 @@ class UserService {
     //     return newUser;
     // };
     public createUser = async (userData: any): Promise<User> => {
+        const hashedPassword = await hashPassword(userData.password);
         const newUser = this.userRepository.create({
             firstName: userData.firstName,
             lastName: userData.lastName,
             email: userData.email,
             image: userData.image,
-            password: userData.password,
+            password: hashedPassword,
             role: userData.role,
             isEmailVerified: userData.isEmailVerified,
             emailVerificationToken: userData.emailVerificationToken,
@@ -96,20 +97,50 @@ class UserService {
         return userToDelete;
     };
 
-    /**
-     * Get user by email
-     */
-    public getUserByEmail = async (
-        email: string
-    ): Promise<User | null> => {
-        const user = await this.userRepository.findOne({
-            where: [
-                { email: email },
-            ],
-        });
-        return user || null;
-    };
 
+    /**
+     * Get user by email and password
+     */
+    
+    public getUserByEmailAndPassword = async (
+        email: string,
+        password: string
+    ): Promise<User | null> => {
+        try {
+            const user = await this.userRepository.findOne({
+                where: {
+                    email: email,
+                },
+            });
+    
+            if (user) {
+                console.log('Retrieved user:', user);
+    
+                if (user.password === null || user.password === undefined) {
+                    console.error('User password is missing or null.');
+                    return null;
+                }
+    
+                const isPasswordValid = await comparePasswords(password, user.password);
+    
+                if (isPasswordValid) {
+                    console.log("compared passwords for user:" ,user)
+                    return user;
+                } else {
+                    console.error('Invalid password.');
+                    return null;
+                }
+            } else {
+                console.error('User not found with the provided email.');
+                return null;
+            }
+        } catch (error) {
+            console.error('Error during getUserByEmailAndPassword:', error);
+            return null;
+        }
+    };
+    
+    
 }
 
 export default new UserService();

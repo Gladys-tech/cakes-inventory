@@ -21,7 +21,4 @@ export const dataSource = new DataSource({
     ],
     migrations: ['src/migrations/**/*{.ts,.js}'],
     subscribers: [],
-    
-}as ConnectionOptions);
-
-
+} as ConnectionOptions);

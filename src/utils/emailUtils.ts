@@ -1,5 +1,8 @@
 import nodemailer from 'nodemailer';
-import { SENDER_EMAIL, USER_CREATED_EMAIL_NOTIFICATION_DURATION  } from './emailConfig';
+import {
+    SENDER_EMAIL,
+    USER_CREATED_EMAIL_NOTIFICATION_DURATION,
+} from './emailConfig';
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -18,18 +21,22 @@ export const sendWelcomeEmail = async (email: string): Promise<void> => {
         html: '<strong>Thank you for joining our platform!</strong>',
     };
 
-   await new Promise((resolve) => setTimeout(resolve, USER_CREATED_EMAIL_NOTIFICATION_DURATION));
+    await new Promise((resolve) =>
+        setTimeout(resolve, USER_CREATED_EMAIL_NOTIFICATION_DURATION)
+    );
 
-   await transporter.sendMail(mailOptions);
+    await transporter.sendMail(mailOptions);
 };
 
-export const sendAccountActivationEmail = async (email: string): Promise<void> => {
+export const sendAccountActivationEmail = async (
+    email: string
+): Promise<void> => {
     const mailOptions = {
         to: email,
         from: SENDER_EMAIL,
         subject: 'Activate Your Account',
         text: 'Please activate your account by clicking the following link:',
-        html: '<strong>Click <a href="#">here</a> to activate your account.</strong>', 
+        html: '<strong>Click <a href="#">here</a> to activate your account.</strong>',
     };
 
     await transporter.sendMail(mailOptions);

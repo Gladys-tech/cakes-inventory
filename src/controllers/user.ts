@@ -1,9 +1,10 @@
 import { Request, Response } from 'express';
 import { UserService } from '../services';
 import { generateJwtToken } from '../utils/jwtUtils';
-import { hashPassword, comparePasswords } from '../utils/passwordUtils';
-import { sendWelcomeEmail, sendAccountActivationEmail } from '../utils/emailUtils';
-
+import {
+    sendWelcomeEmail,
+    sendAccountActivationEmail,
+} from '../utils/emailUtils';
 
 class UserController {
     //getting all users
@@ -124,21 +125,25 @@ class UserController {
         }
     };
 
-
     // user signup
     public signup = async (req: Request, res: Response): Promise<void> => {
         try {
-            const { name, email, password } = req.body;
-            const hashedPassword = await hashPassword(password);
+            const { firstName, lastName, email, password, role, isEmailVerified, agreeToTerms } = req.body;
+            // const hashedPassword = await hashPassword(password);
 
             const newUser = await UserService.createUser({
-                name,
-                email: email,
-                password: hashedPassword,
+                firstName,
+                lastName,
+                email,
+                // password: hashedPassword,
+                password,
+                role,
+                isEmailVerified,
+                agreeToTerms
             });
 
             // Send welcome email
-            // await sendWelcomeEmail(newUser.email);
+            await sendWelcomeEmail(newUser.email);
 
             res.status(201).json({
                 status: 'CREATED',
@@ -154,54 +159,23 @@ class UserController {
     };
 
     // user login
-    public login = async (req: Request, res: Response): Promise<void> => {
+    public login = async (req: Request, res: Response): Promise<void | Response<any, Record<string, any>>> => {
         try {
             const { email, password } = req.body;
-            const user = await UserService.getUserByEmail(email);
-
-            if (!user) {
-                res.status(401).json({
+            const authUser = await UserService.getUserByEmailAndPassword(email, password);
+    
+            if (!authUser) {
+                return res.status(401).json({
                     status: 'UNAUTHORIZED',
-                    message: 'User not found with the provided email.',
+                    message: 'Invalid email or password.',
                 });
-                return;
             }
-
-            if (!user.password) {
-                // Handle missing password
-                res.status(401).json({
-                    status: 'UNAUTHORIZED',
-                    message: 'User password is not available.',
-                });
-                return;
-            }
-
-            console.log('password:', password);
-
-            const userPassword = user.password;
-
-            if (!userPassword) {
-                res.status(500).json({
-                    status: 'INTERNAL_SERVER_ERROR',
-                    message: 'User password is not available.',
-                });
-                return;
-            }
-
-            const isPasswordValid = await comparePasswords(password, userPassword);
-
-            if (!isPasswordValid) {
-                res.status(401).json({
-                    status: 'UNAUTHORIZED',
-                    message: 'Invalid password.',
-                });
-                return;
-            }
-
-            const token = generateJwtToken(user);
-
+    
+            const token = generateJwtToken(authUser);
+    
             res.status(200).json({
                 status: 'OK',
+                message: "Login successful",
                 token,
             });
         } catch (error) {
@@ -212,8 +186,7 @@ class UserController {
             });
         }
     };
-
-
+    
 }
 
 export default new UserController();
