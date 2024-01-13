@@ -1,10 +1,12 @@
 import { Request, Response } from 'express';
 import { UserService } from '../services';
-import { generateJwtToken } from '../utils/jwtUtils';
+import { generateJwtToken, generateRefreshToken } from '../utils/jwtUtils';
+import { verify } from '../utils/jwtUtils';
 import {
     sendWelcomeEmail,
     sendAccountActivationEmail,
 } from '../utils/emailUtils';
+
 
 class UserController {
     //getting all users
@@ -129,21 +131,28 @@ class UserController {
     public signup = async (req: Request, res: Response): Promise<void> => {
         try {
             const { firstName, lastName, email, password, role, isEmailVerified, agreeToTerms } = req.body;
-            // const hashedPassword = await hashPassword(password);
 
             const newUser = await UserService.createUser({
                 firstName,
                 lastName,
                 email,
-                // password: hashedPassword,
                 password,
                 role,
                 isEmailVerified,
                 agreeToTerms
             });
 
-            // Send welcome email
-            await sendWelcomeEmail(newUser.email);
+            // Generate an activation token
+             const activationToken = generateJwtToken(newUser );
+
+            // Save the activation token to the user record
+             await UserService.updateUserActivationToken(newUser.id, activationToken);
+
+            // Send account activation email with the activation token
+             await sendAccountActivationEmail(newUser.email, activationToken);
+
+            // Send account activation  email
+            // await sendAccountActivationEmail(newUser.email);
 
             res.status(201).json({
                 status: 'CREATED',
@@ -163,21 +172,22 @@ class UserController {
         try {
             const { email, password } = req.body;
             const authUser = await UserService.getUserByEmailAndPassword(email, password);
-    
+
             if (!authUser) {
                 return res.status(401).json({
                     status: 'UNAUTHORIZED',
                     message: 'Invalid email or password.',
                 });
             }
-    
+
             const token = generateJwtToken(authUser);
-    
+
             res.status(200).json({
                 status: 'OK',
                 message: "Login successful",
                 token,
             });
+            await sendWelcomeEmail(email);
         } catch (error) {
             console.error('Error during login:', error);
             res.status(500).json({
@@ -186,7 +196,32 @@ class UserController {
             });
         }
     };
-    
+
+    // activate account after signup
+    public activateAccount = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { token } = req.params;
+
+            // Verify and decode the activation token
+            const decodedToken = verify(token);
+
+            // Update user's isEmailVerified status
+            await UserService.activateUser(decodedToken.userId);
+
+            res.status(200).json({
+                status: 'OK',
+                message: 'Account activated successfully.',
+            });
+        } catch (error) {
+            console.error('Error activating account:', error);
+            res.status(500).json({
+                status: 'INTERNAL_SERVER_ERROR',
+                message: 'Error activating account.',
+            });
+        }
+    };
+
+
 }
 
 export default new UserController();

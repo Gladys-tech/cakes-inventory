@@ -1,5 +1,4 @@
 import multer from 'multer';
-
 import { Application } from 'express';
 import { body } from 'express-validator';
 import { CommonRoutesConfig } from '../../common/routes.config';
@@ -42,6 +41,11 @@ export default class UserRoutes extends CommonRoutesConfig {
                 body('password').exists().notEmpty(),
                 UserController.login
             );
+        
+        //email activation 
+        this.app
+            .route('/activate/:token')
+            .get(UserController.activateAccount);
 
         return this.app;
     }

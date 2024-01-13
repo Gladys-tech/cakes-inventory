@@ -21,3 +21,14 @@ export const generateRefreshToken = (user: User): string => {
     });
     return refreshToken;
 };
+
+export const verify = (token: string):any => {
+    try {
+        return jwt.verify(token, JWT_TOKEN_SECRET);
+      } catch (error) {
+        // Handle the error, e.g., invalid token or token expired
+        console.error('JWT verification error:', error);
+        throw error;
+      }
+
+}

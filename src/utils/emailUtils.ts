@@ -8,7 +8,7 @@ const transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
         user: SENDER_EMAIL,
-        password: process.env.EMAIL_NOTIFICATION_PASSWORD,
+        pass: process.env.EMAIL_NOTIFICATION_PASSWORD,
     },
 });
 
@@ -29,15 +29,25 @@ export const sendWelcomeEmail = async (email: string): Promise<void> => {
 };
 
 export const sendAccountActivationEmail = async (
-    email: string
+    email: string,
+    activationToken: string,
 ): Promise<void> => {
     const mailOptions = {
         to: email,
         from: SENDER_EMAIL,
         subject: 'Activate Your Account',
         text: 'Please activate your account by clicking the following link:',
-        html: '<strong>Click <a href="#">here</a> to activate your account.</strong>',
+        html: `<strong>Click <a href="http://localhost:8000/activate/${activationToken}">here</a> to activate your account.</strong>`,
+
     };
 
     await transporter.sendMail(mailOptions);
 };
+
+transporter.verify(function(error, success) {
+    if (error) {
+      console.log('SMTP authentication error:', error);
+    } else {
+      console.log('SMTP authentication successful:', success);
+    }
+  });
