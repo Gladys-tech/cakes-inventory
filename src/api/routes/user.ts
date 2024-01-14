@@ -41,11 +41,9 @@ export default class UserRoutes extends CommonRoutesConfig {
                 body('password').exists().notEmpty(),
                 UserController.login
             );
-        
-        //email activation 
-        this.app
-            .route('/activate/:token')
-            .get(UserController.activateAccount);
+
+        //email activation
+        this.app.route('/activate/:token').get(UserController.activateAccount);
 
         return this.app;
     }

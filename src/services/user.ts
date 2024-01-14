@@ -186,7 +186,6 @@ class UserService {
             console.error('Error during activateUser:', error);
         }
     };
-
 }
 
 export default new UserService();

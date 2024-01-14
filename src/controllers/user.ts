@@ -7,7 +7,6 @@ import {
     sendAccountActivationEmail,
 } from '../utils/emailUtils';
 
-
 class UserController {
     //getting all users
     public getUsers = async (req: Request, res: Response) => {
@@ -130,7 +129,15 @@ class UserController {
     // user signup
     public signup = async (req: Request, res: Response): Promise<void> => {
         try {
-            const { firstName, lastName, email, password, role, isEmailVerified, agreeToTerms } = req.body;
+            const {
+                firstName,
+                lastName,
+                email,
+                password,
+                role,
+                isEmailVerified,
+                agreeToTerms,
+            } = req.body;
 
             const newUser = await UserService.createUser({
                 firstName,
@@ -139,17 +146,20 @@ class UserController {
                 password,
                 role,
                 isEmailVerified,
-                agreeToTerms
+                agreeToTerms,
             });
 
             // Generate an activation token
-             const activationToken = generateJwtToken(newUser );
+            const activationToken = generateJwtToken(newUser);
 
             // Save the activation token to the user record
-             await UserService.updateUserActivationToken(newUser.id, activationToken);
+            await UserService.updateUserActivationToken(
+                newUser.id,
+                activationToken
+            );
 
             // Send account activation email with the activation token
-             await sendAccountActivationEmail(newUser.email, activationToken);
+            await sendAccountActivationEmail(newUser.email, activationToken);
 
             // Send account activation  email
             // await sendAccountActivationEmail(newUser.email);
@@ -168,10 +178,16 @@ class UserController {
     };
 
     // user login
-    public login = async (req: Request, res: Response): Promise<void | Response<any, Record<string, any>>> => {
+    public login = async (
+        req: Request,
+        res: Response
+    ): Promise<void | Response<any, Record<string, any>>> => {
         try {
             const { email, password } = req.body;
-            const authUser = await UserService.getUserByEmailAndPassword(email, password);
+            const authUser = await UserService.getUserByEmailAndPassword(
+                email,
+                password
+            );
 
             if (!authUser) {
                 return res.status(401).json({
@@ -184,7 +200,7 @@ class UserController {
 
             res.status(200).json({
                 status: 'OK',
-                message: "Login successful",
+                message: 'Login successful',
                 token,
             });
             await sendWelcomeEmail(email);
@@ -198,7 +214,10 @@ class UserController {
     };
 
     // activate account after signup
-    public activateAccount = async (req: Request, res: Response): Promise<void> => {
+    public activateAccount = async (
+        req: Request,
+        res: Response
+    ): Promise<void> => {
         try {
             const { token } = req.params;
 
@@ -220,8 +239,6 @@ class UserController {
             });
         }
     };
-
-
 }
 
 export default new UserController();

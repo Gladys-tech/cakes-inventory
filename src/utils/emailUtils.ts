@@ -30,7 +30,7 @@ export const sendWelcomeEmail = async (email: string): Promise<void> => {
 
 export const sendAccountActivationEmail = async (
     email: string,
-    activationToken: string,
+    activationToken: string
 ): Promise<void> => {
     const mailOptions = {
         to: email,
@@ -38,16 +38,15 @@ export const sendAccountActivationEmail = async (
         subject: 'Activate Your Account',
         text: 'Please activate your account by clicking the following link:',
         html: `<strong>Click <a href="http://localhost:8000/activate/${activationToken}">here</a> to activate your account.</strong>`,
-
     };
 
     await transporter.sendMail(mailOptions);
 };
 
-transporter.verify(function(error, success) {
+transporter.verify(function (error, success) {
     if (error) {
-      console.log('SMTP authentication error:', error);
+        console.log('SMTP authentication error:', error);
     } else {
-      console.log('SMTP authentication successful:', success);
+        console.log('SMTP authentication successful:', success);
     }
-  });
+});

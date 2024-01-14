@@ -12,6 +12,7 @@ import {
 import { SoftDeletableEntity } from './abstracts/soft-deleteable';
 import { DbAwareColumn } from '../utils/db-aware-column';
 import { generateEntityId } from '../utils/generate-entity-id';
+import { Address } from './address';  //importing the address entity here
 
 export enum UserRole {
     ADMIN = 'admin',
@@ -128,6 +129,9 @@ export class User extends SoftDeletableEntity {
 
     @Column({ nullable: true })
     resetTokenExpires: Date;
+
+    @OneToMany(() => Address, (address) => address.user, { nullable: true })
+    addresses: Address[];
 
     @BeforeInsert()
     private beforeInsert(): void {
