@@ -4,6 +4,7 @@ import {
     PrimaryGeneratedColumn,
     ManyToOne,
     JoinColumn,
+    OneToOne,
 } from 'typeorm';
 import { User } from './user'; // importing the user entity
 
@@ -27,7 +28,7 @@ export class Address {
     @Column({ nullable: true })
     telphone: number;
 
-    @ManyToOne(() => User, (user) => user.addresses, { nullable: true })
+    @OneToOne(() => User, (user) => user.address, { nullable: true })
     @JoinColumn({ name: 'userId' })
     user: User;
 }

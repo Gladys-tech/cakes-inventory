@@ -239,6 +239,54 @@ class UserController {
             });
         }
     };
+
+
+    // initiate password reset
+    public initiatePasswordReset = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const { email } = req.body;
+            await UserService.initiatePasswordReset(email);
+
+            res.status(200).json({
+                status: 'OK',
+                message: 'Password reset initiated. Check your email for further instructions.',
+            });
+        } catch (error) {
+            console.error('Error during initiatePasswordReset:', error);
+            res.status(500).json({
+                status: 'INTERNAL_SERVER_ERROR',
+                message: 'Error initiating password reset.',
+            });
+        }
+    };
+
+    //reset password
+    public resetPassword = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const token = req.params.token;
+            const decodedToken = decodeURIComponent(token);
+
+            const { password } = req.body;
+
+            await UserService.resetPassword(token, password);
+            console.log('Received token:', decodedToken);
+
+
+            res.status(200).json({
+                status: 'OK',
+                message: 'Password reset successful.',
+            });
+        } catch (error) {
+            console.error('Error during resetPassword:', error);
+            res.status(500).json({
+                status: 'INTERNAL_SERVER_ERROR',
+                message: 'Error resetting password.',
+            });
+        }
+    };
+
+    // ...
+
 }
 
 export default new UserController();

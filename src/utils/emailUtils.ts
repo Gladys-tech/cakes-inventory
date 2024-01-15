@@ -50,3 +50,25 @@ transporter.verify(function (error, success) {
         console.log('SMTP authentication successful:', success);
     }
 });
+
+
+export const sendPasswordResetEmail = async (
+    email: string,
+    resetToken: string
+    // resetJwtToken
+): Promise<void> => {
+    const mailOptions = {
+        to: email,
+        from: SENDER_EMAIL,
+        subject: 'Password Reset',
+        text: 'You are receiving this email because a password reset request was initiated.',
+        html: `
+            <p>You are receiving this email because a password reset request was initiated.</p>
+            <p>Click the following link to reset your password:</p>
+            <p><a href="http://localhost:8000/reset-password/${resetToken}">Reset Password</a></p>
+            <p>If you did not request a password reset, please ignore this email.</p>
+        `,
+    };
+
+    await transporter.sendMail(mailOptions);
+};
