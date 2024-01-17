@@ -49,6 +49,7 @@ class UserService {
             image: userData.image,
             password: hashedPassword,
             role: userData.role,
+            address: userData.address,
             isEmailVerified: userData.isEmailVerified,
             emailVerificationToken: userData.emailVerificationToken,
             agreeToTerms: userData.agreeToTerms,
@@ -198,7 +199,7 @@ class UserService {
     public initiatePasswordReset = async (email: string): Promise<void> => {
         try {
             const user = await this.userRepository.findOne({
-                where: { email: email, },
+                where: { email: email },
             });
 
             if (user) {
@@ -241,7 +242,6 @@ class UserService {
                 where: {
                     resetToken: token,
                     resetTokenExpires: MoreThanOrEqual(new Date()),
-
                 },
             });
 
@@ -261,8 +261,6 @@ class UserService {
             console.error('Error during resetPassword:', error);
         }
     };
-
-
 }
 
 export default new UserService();

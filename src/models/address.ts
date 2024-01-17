@@ -5,8 +5,11 @@ import {
     ManyToOne,
     JoinColumn,
     OneToOne,
+    ManyToMany,
+    JoinTable,
 } from 'typeorm';
 import { User } from './user'; // importing the user entity
+import { Shop } from './shop';
 
 @Entity()
 export class Address {
@@ -31,4 +34,8 @@ export class Address {
     @OneToOne(() => User, (user) => user.address, { nullable: true })
     @JoinColumn({ name: 'userId' })
     user: User;
+
+    @ManyToMany(() => Shop, (shop) => shop.address)
+    @JoinTable()
+    shops: Shop[];
 }

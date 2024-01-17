@@ -5,7 +5,7 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 
 import { CommonRoutesConfig } from './common/routes.config';
-import { UserRoutes } from './api/routes';
+import { ProductRoutes, ShopRoutes, UserRoutes } from './api/routes';
 import { Logger } from '../logger';
 
 const app: Application = express();
@@ -38,6 +38,8 @@ app.use(limiter);
 
 // Routes (add routes to routes array)
 routes.push(new UserRoutes(app));
+routes.push(new ShopRoutes(app));
+routes.push(new ProductRoutes(app));
 
 // Health Check
 app.get('/health', (req: Request, res: Response) => {

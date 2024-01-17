@@ -46,15 +46,19 @@ export default class UserRoutes extends CommonRoutesConfig {
         this.app.route('/activate/:token').get(UserController.activateAccount);
 
         //initiate passwordReset
-        this.app.route('/reset-password').post(
-            body('email').exists().notEmpty(),
-            UserController.initiatePasswordReset
+        this.app
+            .route('/reset-password')
+            .post(
+                body('email').exists().notEmpty(),
+                UserController.initiatePasswordReset
             );
 
         //reset password
-        this.app.route('/reset-password/:token').post(
-            body('password').exists().notEmpty(),
-            UserController.resetPassword
+        this.app
+            .route('/reset-password/:token')
+            .post(
+                body('password').exists().notEmpty(),
+                UserController.resetPassword
             );
 
         return this.app;

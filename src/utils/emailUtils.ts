@@ -51,7 +51,6 @@ transporter.verify(function (error, success) {
     }
 });
 
-
 export const sendPasswordResetEmail = async (
     email: string,
     resetToken: string

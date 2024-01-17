@@ -40,7 +40,10 @@ export const verifyResetToken = (token: string): any => {
         if (decodedToken.exp) {
             const currentTime = Math.floor(Date.now() / 1000); // Current time in seconds
             if (decodedToken.exp < currentTime) {
-                throw new TokenExpiredError('Token expired', new Date(decodedToken.exp * 1000));
+                throw new TokenExpiredError(
+                    'Token expired',
+                    new Date(decodedToken.exp * 1000)
+                );
             }
         }
 
@@ -52,5 +55,3 @@ export const verifyResetToken = (token: string): any => {
         throw error;
     }
 };
-
-

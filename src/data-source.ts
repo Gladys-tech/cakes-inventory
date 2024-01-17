@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import { ConnectionOptions, DataSource } from 'typeorm';
 import { User } from './models/user';
+import { Shop } from './models/shop';
 
 export const dataSource = new DataSource({
     type: 'postgres',
@@ -16,6 +17,7 @@ export const dataSource = new DataSource({
         `${__dirname}/models/*.ts`,
         `${__dirname}/models/*.js`,
         `${__dirname}/models/User.ts`,
+        `${__dirname}/models/Shop.ts`,
         `${__dirname}/models/abstracts/*.js`,
         `${__dirname}/models/abstracts/*.ts`,
     ],

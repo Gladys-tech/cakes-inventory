@@ -8,11 +8,14 @@ import {
     OneToOne,
     JoinColumn,
     PrimaryGeneratedColumn,
+    ManyToMany,
+    JoinTable,
 } from 'typeorm';
 import { SoftDeletableEntity } from './abstracts/soft-deleteable';
 import { DbAwareColumn } from '../utils/db-aware-column';
 import { generateEntityId } from '../utils/generate-entity-id';
 import { Address } from './address'; //importing the address entity here
+import { Shop } from './shop';
 
 export enum UserRole {
     ADMIN = 'admin',
@@ -133,6 +136,11 @@ export class User extends SoftDeletableEntity {
     @OneToOne(() => Address, (address) => address.user, { nullable: true })
     @JoinColumn()
     address: Address;
+
+    @ManyToMany(() => Shop, (shop) => shop.users)
+    @JoinTable()
+    shops: Shop[];
+
 
     @BeforeInsert()
     private beforeInsert(): void {

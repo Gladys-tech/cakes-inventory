@@ -137,6 +137,7 @@ class UserController {
                 role,
                 isEmailVerified,
                 agreeToTerms,
+                address,
             } = req.body;
 
             const newUser = await UserService.createUser({
@@ -147,6 +148,7 @@ class UserController {
                 role,
                 isEmailVerified,
                 agreeToTerms,
+                address,
             });
 
             // Generate an activation token
@@ -240,16 +242,19 @@ class UserController {
         }
     };
 
-
     // initiate password reset
-    public initiatePasswordReset = async (req: Request, res: Response): Promise<void> => {
+    public initiatePasswordReset = async (
+        req: Request,
+        res: Response
+    ): Promise<void> => {
         try {
             const { email } = req.body;
             await UserService.initiatePasswordReset(email);
 
             res.status(200).json({
                 status: 'OK',
-                message: 'Password reset initiated. Check your email for further instructions.',
+                message:
+                    'Password reset initiated. Check your email for further instructions.',
             });
         } catch (error) {
             console.error('Error during initiatePasswordReset:', error);
@@ -261,7 +266,10 @@ class UserController {
     };
 
     //reset password
-    public resetPassword = async (req: Request, res: Response): Promise<void> => {
+    public resetPassword = async (
+        req: Request,
+        res: Response
+    ): Promise<void> => {
         try {
             const token = req.params.token;
             const decodedToken = decodeURIComponent(token);
@@ -270,7 +278,6 @@ class UserController {
 
             await UserService.resetPassword(token, password);
             console.log('Received token:', decodedToken);
-
 
             res.status(200).json({
                 status: 'OK',
@@ -286,7 +293,6 @@ class UserController {
     };
 
     // ...
-
 }
 
 export default new UserController();
