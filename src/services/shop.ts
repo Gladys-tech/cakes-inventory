@@ -24,12 +24,25 @@ class ShopService {
     /**
      * Retrieve a shop by ID
      */
+    // public getShopById = async (shopId: string): Promise<Shop | null> => {
+    //     const shop = await this.shopRepository.findOne({
+    //         where: { id: shopId },
+    //         relations: ['address', 'products'], // Specify related entities to load
+    //     });
+    //     return shop || null;
+    // };
+
     public getShopById = async (shopId: string): Promise<Shop | null> => {
-        const shop = await this.shopRepository.findOne({
-            where: { id: shopId },
-            relations: ['address', 'products'], // Specify related entities to load
-        });
-        return shop || null;
+        try {
+            const shop = await this.shopRepository.findOneOrFail({
+                where: { id: shopId },
+                relations: ['address', 'products'],
+            });
+            return shop;
+        } catch (error) {
+            console.error('Error retrieving shop by ID:', error.message);
+            return null;
+        }
     };
 
 

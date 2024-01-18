@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { ShopService } from '../services';
 
-
 class ShopController {
     // getting all shops
     public getShops = async (req: Request, res: Response) => {
@@ -17,7 +16,6 @@ class ShopController {
             shops,
         });
     };
-
 
     // getting shop by id
     public getShopById = async (req: Request, res: Response) => {
@@ -94,7 +92,7 @@ class ShopController {
             });
         }
     };
-    
+
     // deleting a shop
     public deleteShop = async (req: Request, res: Response) => {
         const shopId = req.params.id;

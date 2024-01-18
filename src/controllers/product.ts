@@ -65,7 +65,7 @@ class ProductController {
         }
     };
 
-    // updating a user
+    // updating a product
     public updateProduct = async (req: Request, res: Response) => {
         const productId = req.params.id;
         const productData = req.body;

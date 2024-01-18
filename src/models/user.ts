@@ -141,7 +141,6 @@ export class User extends SoftDeletableEntity {
     @JoinTable()
     shops: Shop[];
 
-
     @BeforeInsert()
     private beforeInsert(): void {
         this.id = generateEntityId(this.id, 'user');

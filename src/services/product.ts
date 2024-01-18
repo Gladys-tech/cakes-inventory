@@ -32,9 +32,10 @@ class ProductService {
     };
 
 
+
     /**
-    * Create a new product
-    */
+     * Create a new product
+     */
     public createProduct = async (productData: any): Promise<Product> => {
         const newProduct = this.productRepository.create({
             name: productData.name,
@@ -42,32 +43,21 @@ class ProductService {
             price: productData.price,
         });
 
-        // If 'shops' are provided in productData, find the existing shop entities
         if (productData.shops && productData.shops.length > 0) {
-            const shopEntities: Shop[] = [];
+            const shopIds = productData.shops.map((shopData: any) => shopData.shopId);
 
-            for (const shopData of productData.shops) {
-                if (shopData.shopId) {
-                    try {
-                        const shop = await this.productRepository.manager.findOneOrFail(Shop, shopData.shopId);
-                        shopEntities.push(shop);
-                    } catch (error) {
-                        // Ignore and continue if shop with provided ID doesn't exist
-                        console.error(`Shop with ID ${shopData.shopId} not found. Ignoring.`);
-                    }
-                }
+            try {
+                const shops = await this.productRepository.manager.findByIds(Shop, shopIds);
+                newProduct.shops = shops;
+            } catch (error) {
+                console.error('Error retrieving shops:', error);
             }
-
-            // Set the shops for the product
-            newProduct.shops = shopEntities;
         }
 
-        // Save the new product with its relationships
         await this.productRepository.save(newProduct);
 
         return newProduct;
     };
-
 
     /**
      * Update a product by ID

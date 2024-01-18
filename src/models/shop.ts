@@ -6,6 +6,7 @@ import {
     ManyToOne,
     JoinColumn,
     ManyToMany,
+    JoinTable,
 } from 'typeorm';
 import { Product } from './product';
 import { Address } from './address';
@@ -43,12 +44,19 @@ export class Shop {
     @JoinColumn({ name: 'addressId' })
     address: Address;
 
+    // @ManyToMany(() => Product, (product) => product.shops, { cascade: ['insert', 'update', 'remove'] })
+    // @JoinTable()
+    // products: Product[];
     @ManyToMany(() => Product, (product) => product.shops, { cascade: ['remove'] })
     products: Product[];
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;
 
-    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
+    @Column({
+        type: 'timestamp',
+        default: () => 'CURRENT_TIMESTAMP',
+        onUpdate: 'CURRENT_TIMESTAMP',
+    })
     updatedAt: Date;
 }
