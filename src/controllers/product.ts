@@ -71,7 +71,10 @@ class ProductController {
         const productData = req.body;
 
         try {
-            const updatedProduct = await ProductService.updateProduct(productId, productData);
+            const updatedProduct = await ProductService.updateProduct(
+                productId,
+                productData
+            );
 
             if (!updatedProduct) {
                 return res.status(404).json({
@@ -98,7 +101,9 @@ class ProductController {
         const productId = req.params.id;
 
         try {
-            const deletedProduct = await ProductService.deleteProduct(productId);
+            const deletedProduct = await ProductService.deleteProduct(
+                productId
+            );
 
             if (!deletedProduct) {
                 return res.status(404).json({
@@ -119,8 +124,6 @@ class ProductController {
             });
         }
     };
-
-    
 }
 
 export default new ProductController();

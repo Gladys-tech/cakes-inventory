@@ -3,6 +3,7 @@ import { Application } from 'express';
 import { body } from 'express-validator';
 import { CommonRoutesConfig } from '../../common/routes.config';
 import { UserController } from '../../controllers';
+import { authenticateToken } from '../../middleware/authMiddleware';
 
 export default class UserRoutes extends CommonRoutesConfig {
     constructor(app: Application) {
@@ -10,6 +11,9 @@ export default class UserRoutes extends CommonRoutesConfig {
     }
 
     configureRoutes() {
+        // Apply authenticateToken middleware to protect these routes
+        this.app.use('/users', authenticateToken);
+
         // Read
         this.app.route('/users').get(UserController.getUsers);
         this.app.route('/users/:id').get(UserController.getUserById);

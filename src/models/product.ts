@@ -21,6 +21,9 @@ export class Product {
     @Column({ type: 'decimal', precision: 10, scale: 2 }) // Use 'decimal' type for decimal values
     price: number;
 
+    @Column({ type: 'int', default: 0 }) // New field for inventory quantity
+    inventoryQuantity: number;
+
     @ManyToMany(() => Shop, (shop) => shop.products)
     @JoinTable()
     shops: Shop[];

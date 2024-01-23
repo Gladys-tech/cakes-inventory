@@ -2,6 +2,7 @@ import { Application } from 'express';
 import { body } from 'express-validator';
 import { CommonRoutesConfig } from '../../common/routes.config';
 import { ProductController } from '../../controllers';
+import { authenticateToken } from '../../middleware/authMiddleware';
 
 export default class ProductRoutes extends CommonRoutesConfig {
     constructor(app: Application) {
@@ -9,6 +10,9 @@ export default class ProductRoutes extends CommonRoutesConfig {
     }
 
     configureRoutes() {
+        // Apply authenticateToken middleware to protect these routes
+        this.app.use('/products', authenticateToken);
+
         // Read
         this.app.route('/products').get(ProductController.getProducts);
         this.app.route('/products/:id').get(ProductController.getProductById);

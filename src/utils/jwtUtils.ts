@@ -24,6 +24,7 @@ export const generateRefreshToken = (user: User): string => {
 
 export const verify = (token: string): any => {
     try {
+        console.log('Verifying token:', token);
         return jwt.verify(token, JWT_TOKEN_SECRET);
     } catch (error) {
         // Handle the error, e.g., invalid token or token expired

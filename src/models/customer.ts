@@ -1,53 +1,58 @@
 import {
     Column,
     Entity,
+    PrimaryGeneratedColumn,
     Index,
-    BeforeInsert,
     OneToMany,
-    ManyToOne,
-    OneToOne,
-    JoinColumn,
+    
 } from 'typeorm';
-import { SoftDeletableEntity } from './abstracts/soft-deleteable';
-import { DbAwareColumn } from '../utils/db-aware-column';
-import { generateEntityId } from '../utils/generate-entity-id';
+// import { SoftDeletableEntity } from './abstracts/soft-deleteable';
+import { Order } from './order';
 
-/**
- * @schema customer
- *
- * title: customer
- *
- * description: Customer entity
- *
- * x-resourceId: `customer`
- *
- * properties:
- *
- *     - firstName:
- *         type: `string`
- *         description: The first name of the customer.
- *     - lastName:
- *         type: `string`
- *         description: The last name of the customer.
- *     - email:
- *         type: `string`
- *         description: The email address of the customer.
- *     - product:
- *         type: `string`
- *         description: The product for the customer's choice.
- *     - location:
- *         type: `string`
- *         description: The location of the customer.
- *     - telphone:
- *          type: `number`
- *          description: The phone number for the customer
- *     - isEmailVerified:
- *         type: `boolean`
- *         description: Whether the customer has verified their email address.
- *  *
- */
+// /**
+//  * @schema customer
+//  *
+//  * title: customer
+//  *
+//  * description: Customer entity
+//  *
+//  * x-resourceId: `customer`
+//  *
+//  * properties:
+//  *
+//  *     - id:
+//  *         type: `integer`
+//  *         description: The unique identifier for the customer.
+//  *     - firstName:
+//  *         type: `string`
+//  *         description: The first name of the customer.
+//  *     - lastName:
+//  *         type: `string`
+//  *         description: The last name of the customer.
+//  *     - email:
+//  *         type: `string`
+//  *         description: The email address of the customer.
+//  *     - location:
+//  *         type: `string`
+//  *         description: The location of the customer.
+//  *     - telphone:
+//  *          type: `number`
+//  *          description: The phone number for the customer
+//  *     - isEmailVerified:
+//  *         type: `boolean`
+//  *         description: Whether the customer has verified their email address.
+//  *     - cart:
+//  *         type: `json`
+//  *         description: JSON array of products in the customer's cart.
+//  * 
+//  * @relation Orders
+//  * @order { createdAt: 'DESC' }
+//  */
 @Entity()
-export class Customer extends SoftDeletableEntity {
+export class Customer{
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
+
     @Column({ nullable: true })
     firstName: string;
 
@@ -59,9 +64,6 @@ export class Customer extends SoftDeletableEntity {
     email: string;
 
     @Column({ nullable: true })
-    product: string;
-
-    @Column({ nullable: true })
     location: string;
 
     @Column({ nullable: true })
@@ -69,4 +71,12 @@ export class Customer extends SoftDeletableEntity {
 
     @Column({ nullable: true, default: false })
     isEmailVerified: boolean;
+
+    // @Column({ type: 'json', nullable: true })
+    // cart: string;
+    @Column({ type: 'json', nullable: true })
+    cart: Array<{ productId: string; quantity: number }> | null;
+
+    @OneToMany(() => Order, (order) => order.customer)
+    orders: Order[];
 }

@@ -4,7 +4,6 @@ import { Product } from '../models/product';
 import { ShopRepository } from '../repositories';
 import { Address } from '../models/address';
 
-
 class ShopService {
     private readonly shopRepository: typeof ShopRepository;
 
@@ -15,11 +14,13 @@ class ShopService {
     /**
      * Retrieve all shops
      */
-    public getAllShops = async (req: Request, res: Response): Promise<Shop[]> => {
+    public getAllShops = async (
+        req: Request,
+        res: Response
+    ): Promise<Shop[]> => {
         const shops = await this.shopRepository.find();
         return shops;
     };
-
 
     /**
      * Retrieve a shop by ID
@@ -45,7 +46,6 @@ class ShopService {
         }
     };
 
-
     /**
      * Create a new shop
      */
@@ -64,9 +64,15 @@ class ShopService {
             let address: Address;
 
             if (shopData.address.id) {
-                address = await this.shopRepository.manager.findOne(Address, shopData.address.id);
+                address = await this.shopRepository.manager.findOne(
+                    Address,
+                    shopData.address.id
+                );
             } else {
-                address = this.shopRepository.manager.create(Address, shopData.address);
+                address = this.shopRepository.manager.create(
+                    Address,
+                    shopData.address
+                );
                 await this.shopRepository.manager.save(Address, address);
             }
 
@@ -82,9 +88,15 @@ class ShopService {
                 let product: Product;
 
                 if (productData.id) {
-                    product = await this.shopRepository.manager.findOne(Product, productData.id);
+                    product = await this.shopRepository.manager.findOne(
+                        Product,
+                        productData.id
+                    );
                 } else {
-                    product = this.shopRepository.manager.create(Product, productData);
+                    product = this.shopRepository.manager.create(
+                        Product,
+                        productData
+                    );
                     await this.shopRepository.manager.save(Product, product);
                 }
 
@@ -101,7 +113,6 @@ class ShopService {
 
         return newShop;
     };
-
 
     /**
      * Update a shop by ID
@@ -124,7 +135,6 @@ class ShopService {
         return updatedShop;
     };
 
-
     /**
      * Delete a shop by ID
      */
@@ -141,7 +151,6 @@ class ShopService {
 
         return shopToDelete;
     };
-
 }
 
 export default new ShopService();

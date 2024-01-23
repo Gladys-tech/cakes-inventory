@@ -3,7 +3,6 @@ import { Product } from '../models/product';
 import { ProductRepository } from '../repositories';
 import { Shop } from '../models/shop';
 
-
 class ProductService {
     private readonly productRepository: typeof ProductRepository;
 
@@ -14,24 +13,25 @@ class ProductService {
     /**
      * Retrieve all products
      */
-    public getAllProducts = async (req: Request, res: Response): Promise<Product[]> => {
+    public getAllProducts = async (
+        req: Request,
+        res: Response
+    ): Promise<Product[]> => {
         const products = await this.productRepository.find();
         return products;
     };
 
-
     /**
      * Retrieve a product by ID
      */
-    public getProductById = async (productId: string): Promise<Product | null> => {
+    public getProductById = async (
+        productId: string
+    ): Promise<Product | null> => {
         const product = await this.productRepository.findOne({
             where: { id: productId },
-
         });
         return product || null;
     };
-
-
 
     /**
      * Create a new product
@@ -41,13 +41,19 @@ class ProductService {
             name: productData.name,
             description: productData.description,
             price: productData.price,
+            inventoryQuantity: productData.inventoryQuantity,
         });
 
         if (productData.shops && productData.shops.length > 0) {
-            const shopIds = productData.shops.map((shopData: any) => shopData.shopId);
+            const shopIds = productData.shops.map(
+                (shopData: any) => shopData.shopId
+            );
 
             try {
-                const shops = await this.productRepository.manager.findByIds(Shop, shopIds);
+                const shops = await this.productRepository.manager.findByIds(
+                    Shop,
+                    shopIds
+                );
                 newProduct.shops = shops;
             } catch (error) {
                 console.error('Error retrieving shops:', error);
@@ -74,17 +80,21 @@ class ProductService {
             return null; // product not found
         }
 
-        const updatedProduct = this.productRepository.merge(existingProduct, productData);
+        const updatedProduct = this.productRepository.merge(
+            existingProduct,
+            productData
+        );
         await this.productRepository.save(updatedProduct);
 
         return updatedProduct;
     };
 
-
     /**
      * Delete a product by ID
      */
-    public deleteProduct = async (productId: string): Promise<Product | null> => {
+    public deleteProduct = async (
+        productId: string
+    ): Promise<Product | null> => {
         const productToDelete = await this.productRepository.findOne({
             where: { id: productId },
         });
@@ -97,7 +107,6 @@ class ProductService {
 
         return productToDelete;
     };
-
 }
 
 export default new ProductService();
