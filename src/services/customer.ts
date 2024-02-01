@@ -19,7 +19,9 @@ class CustomerService {
     };
 
     // Get customer by ID
-    public getCustomerById = async (customerId: string): Promise<Customer | null> => {
+    public getCustomerById = async (
+        customerId: string
+    ): Promise<Customer | null> => {
         const customer = await this.customerRepository.findOne({
             where: { id: customerId },
         });
@@ -37,7 +39,6 @@ class CustomerService {
             isEmailVerified: customerData.isEmailVerified,
             cart: customerData.cart,
         });
-
 
         await this.customerRepository.save(newCustomer);
 
@@ -67,7 +68,9 @@ class CustomerService {
     };
 
     // Delete a customer by ID
-    public deleteCustomer = async (customerId: string): Promise<Customer | null> => {
+    public deleteCustomer = async (
+        customerId: string
+    ): Promise<Customer | null> => {
         const customerToDelete = await this.customerRepository.findOne({
             where: { id: customerId },
         });

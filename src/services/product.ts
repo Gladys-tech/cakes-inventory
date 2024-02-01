@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import { Product } from '../models/product';
 import { ProductRepository } from '../repositories';
 import { Shop } from '../models/shop';
+import { ProductImage } from '../models/productImage';
+import cloudinary from '../utils/cloudinary';
 
 class ProductService {
     private readonly productRepository: typeof ProductRepository;
@@ -29,9 +31,52 @@ class ProductService {
     ): Promise<Product | null> => {
         const product = await this.productRepository.findOne({
             where: { id: productId },
+            relations: ['images'], // Include the images relation
         });
         return product || null;
     };
+
+
+     /**
+     * Add product images
+     */
+    private async addProductImages(
+        product: Product,
+        imageUrls: string[]
+    ): Promise<void> {
+
+        const uploadedImageUrls = await Promise.all(
+            imageUrls.slice(0, 6).map(async (url, index) => {
+                try {
+                    // const result = await cloudinary.uploader.upload(url);
+                    const result = await cloudinary.uploader.upload(url, {
+                        width: 300, // Set your desired width
+                        height: 300, // Set your desired height
+                        crop: "fill", // Adjust the crop mode as needed
+                    });
+                    if (index === 0) {
+                        // Set the first image as the primary image
+                        product.primaryImageUrl = result.secure_url;
+                    }
+                    console.log('Upload Result:', result);
+                    return result.secure_url;
+                } catch (error) {
+                    console.error('Error uploading image to Cloudinary:', error);
+                    throw error;
+                }
+            })
+        );        
+    
+        const productImages = uploadedImageUrls.map((url) => {
+            const image = new ProductImage();
+            image.imageUrl = url;
+            image.product = product;
+            return image;
+        });
+    
+        await this.productRepository.manager.save(ProductImage, productImages);
+        await this.productRepository.save(product);
+    }
 
     /**
      * Create a new product
@@ -61,6 +106,10 @@ class ProductService {
         }
 
         await this.productRepository.save(newProduct);
+
+        if (productData.imageUrls && productData.imageUrls.length > 0) {
+            await this.addProductImages(newProduct, productData.imageUrls.slice(0, 6));
+        }
 
         return newProduct;
     };

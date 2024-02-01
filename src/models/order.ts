@@ -4,8 +4,18 @@ import {
     PrimaryGeneratedColumn,
     ManyToOne,
     JoinColumn,
+    ManyToMany,
+    JoinTable,
 } from 'typeorm';
 import { Customer } from './customer';
+import { Product } from './product';
+
+
+export enum PaymentMethod {
+    AirtelMoney = 'airtel_money',
+    MTNMobileMoney = 'mtn_mobile_money',
+    CashOnDelivery = 'cash_on_delivery',
+}
 
 /**
  * @schema order
@@ -49,8 +59,8 @@ export class Order {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column({ generated: 'uuid' })
-    serialNumber: string;
+    // @Column({ generated: 'uuid' })
+    // serialNumber: string;
 
     @Column({ type: 'float' })
     orderValue: number;
@@ -74,4 +84,15 @@ export class Order {
     @ManyToOne(() => Customer, (customer) => customer.orders)
     @JoinColumn({ name: 'customerId' })
     customer: Customer;
+
+    @ManyToMany(() => Product, (product) => product.orders)
+    @JoinTable()
+    products: Product[];
+
+    @Column({
+        type: 'enum',
+        enum: PaymentMethod,
+        default: PaymentMethod.CashOnDelivery,
+    })
+    paymentMethod: PaymentMethod;
 }

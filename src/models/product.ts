@@ -4,8 +4,11 @@ import {
     PrimaryGeneratedColumn,
     ManyToMany,
     JoinTable,
+    OneToMany,
 } from 'typeorm';
 import { Shop } from './shop';
+import { Order } from './order';
+import { ProductImage } from './productImage';
 
 @Entity()
 export class Product {
@@ -24,12 +27,20 @@ export class Product {
     @Column({ type: 'int', default: 0 }) // New field for inventory quantity
     inventoryQuantity: number;
 
+    @Column({ nullable: true })
+    primaryImageUrl: string;
+
+    @OneToMany(() => ProductImage, (image) => image.product, { cascade: true })
+    images: ProductImage[];
+
     @ManyToMany(() => Shop, (shop) => shop.products)
     @JoinTable()
     shops: Shop[];
-    // @ManyToMany(() => Shop, (shop) => shop.products, { cascade: ['insert', 'update'] })
-    // @JoinTable()
-    // shops: Shop[];
+    
+
+    @ManyToMany(() => Order, (order) => order.products)
+    @JoinTable()
+    orders: Order[];
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;

@@ -28,4 +28,3 @@ export default class OrderRoutes extends CommonRoutesConfig {
         return this.app;
     }
 }
-

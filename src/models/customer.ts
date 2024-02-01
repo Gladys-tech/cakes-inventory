@@ -4,7 +4,6 @@ import {
     PrimaryGeneratedColumn,
     Index,
     OneToMany,
-    
 } from 'typeorm';
 // import { SoftDeletableEntity } from './abstracts/soft-deleteable';
 import { Order } from './order';
@@ -44,12 +43,12 @@ import { Order } from './order';
 //  *     - cart:
 //  *         type: `json`
 //  *         description: JSON array of products in the customer's cart.
-//  * 
+//  *
 //  * @relation Orders
 //  * @order { createdAt: 'DESC' }
 //  */
 @Entity()
-export class Customer{
+export class Customer {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
@@ -75,7 +74,8 @@ export class Customer{
     // @Column({ type: 'json', nullable: true })
     // cart: string;
     @Column({ type: 'json', nullable: true })
-    cart: Array<{ productId: string; quantity: number }> | null;
+    // cart: Array<{ productId: string; quantity: number }> | null;
+    cart:any;
 
     @OneToMany(() => Order, (order) => order.customer)
     orders: Order[];

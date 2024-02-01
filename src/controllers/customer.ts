@@ -51,7 +51,9 @@ class CustomerController {
         const customerData = req.body;
 
         try {
-            const newCustomer = await CustomerService.createCustomer(customerData);
+            const newCustomer = await CustomerService.createCustomer(
+                customerData
+            );
 
             res.status(201).json({
                 status: 'CREATED',
@@ -102,7 +104,9 @@ class CustomerController {
         const customerId = req.params.id;
 
         try {
-            const deletedCustomer = await CustomerService.deleteCustomer(customerId);
+            const deletedCustomer = await CustomerService.deleteCustomer(
+                customerId
+            );
 
             if (!deletedCustomer) {
                 return res.status(404).json({

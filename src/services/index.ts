@@ -4,4 +4,10 @@ import ProductService from './product';
 import CustomerService from './customer';
 import OrderService from './order';
 
-export {  CustomerService, UserService, ShopService, ProductService, OrderService };
+export {
+    CustomerService,
+    UserService,
+    ShopService,
+    ProductService,
+    OrderService,
+};

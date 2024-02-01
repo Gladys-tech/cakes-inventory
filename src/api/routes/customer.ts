@@ -14,7 +14,9 @@ export default class CustomerRoutes extends CommonRoutesConfig {
 
         // Read
         this.app.route('/customers').get(CustomerController.getCustomers);
-        this.app.route('/customers/:id').get(CustomerController.getCustomerById);
+        this.app
+            .route('/customers/:id')
+            .get(CustomerController.getCustomerById);
 
         // Create
         this.app.route('/customers').post(CustomerController.createCustomer);
@@ -23,7 +25,9 @@ export default class CustomerRoutes extends CommonRoutesConfig {
         this.app.route('/customers/:id').put(CustomerController.updateCustomer);
 
         // Delete
-        this.app.route('/customers/:id').delete(CustomerController.deleteCustomer);
+        this.app
+            .route('/customers/:id')
+            .delete(CustomerController.deleteCustomer);
 
         return this.app;
     }
