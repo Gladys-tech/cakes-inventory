@@ -4,4 +4,10 @@ import ProductController from './product';
 import CustomerController from './customer';
 import OrderController from './order';
 
-export { CustomerController, UserController, ShopController, ProductController, OrderController };
+export {
+    CustomerController,
+    UserController,
+    ShopController,
+    ProductController,
+    OrderController,
+};

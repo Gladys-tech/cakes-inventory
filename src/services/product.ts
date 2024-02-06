@@ -4,6 +4,9 @@ import { ProductRepository } from '../repositories';
 import { Shop } from '../models/shop';
 import { ProductImage } from '../models/productImage';
 import cloudinary from '../utils/cloudinary';
+// import sharp from 'sharp';
+// import { writeFile, unlink } from 'fs/promises';
+
 
 class ProductService {
     private readonly productRepository: typeof ProductRepository;
@@ -48,17 +51,33 @@ class ProductService {
         const uploadedImageUrls = await Promise.all(
             imageUrls.slice(0, 6).map(async (url, index) => {
                 try {
+
+                    // const compressedBuffer = await sharp(url)
+                    //     .resize(300, 300)
+                    //     .toBuffer();
+
+                    // // Save the compressed image to a temporary file
+                    // const tempFilePath = `temp-${index}.jpg`;
+                    // await writeFile(tempFilePath, compressedBuffer, 'binary');
+
+                    // console.log('Uploading image:', url);
+
+
+                    // Upload the temporary file to Cloudinary
                     // const result = await cloudinary.uploader.upload(url);
                     const result = await cloudinary.uploader.upload(url, {
-                        width: 300, // Set your desired width
-                        height: 300, // Set your desired height
-                        crop: "fill", // Adjust the crop mode as needed
+                        width: 300, 
+                        height: 300, 
+                        crop: "fill", 
                     });
                     if (index === 0) {
                         // Set the first image as the primary image
                         product.primaryImageUrl = result.secure_url;
                     }
                     console.log('Upload Result:', result);
+
+                    // Delete the temporary file after uploading
+                    // await unlink(tempFilePath);
                     return result.secure_url;
                 } catch (error) {
                     console.error('Error uploading image to Cloudinary:', error);
@@ -113,6 +132,9 @@ class ProductService {
 
         return newProduct;
     };
+
+
+    
 
     /**
      * Update a product by ID

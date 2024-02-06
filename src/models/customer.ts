@@ -75,7 +75,7 @@ export class Customer {
     // cart: string;
     @Column({ type: 'json', nullable: true })
     // cart: Array<{ productId: string; quantity: number }> | null;
-    cart:any;
+    cart: any;
 
     @OneToMany(() => Order, (order) => order.customer)
     orders: Order[];

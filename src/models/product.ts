@@ -36,7 +36,6 @@ export class Product {
     @ManyToMany(() => Shop, (shop) => shop.products)
     @JoinTable()
     shops: Shop[];
-    
 
     @ManyToMany(() => Order, (order) => order.products)
     @JoinTable()

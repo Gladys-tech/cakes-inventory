@@ -32,7 +32,6 @@ class OrderService {
         return orders;
     };
 
-    
     /**
      * Retrieve an order by ID with detailed product information
      */
@@ -44,21 +43,25 @@ class OrderService {
             });
 
             // Fetch detailed product information for each item in the cart
-            const cartWithProductInfo = await Promise.all(order.customer.cart.map(async (cartItem) => {
-                const productInfo = await this.productRepository.findOne({
-                    where: { id: cartItem.productId },
-                });
-                return {
-                    productId: cartItem.productId,
-                    quantity: cartItem.quantity,
-                    productInfo: productInfo || null, // Include product information or null if not found
-                };
-            }));
+            const cartWithProductInfo = await Promise.all(
+                order.customer.cart.map(async (cartItem) => {
+                    const productInfo = await this.productRepository.findOne({
+                        where: { id: cartItem.productId },
+                    });
+                    return {
+                        productId: cartItem.productId,
+                        quantity: cartItem.quantity,
+                        productInfo: productInfo || null, // Include product information or null if not found
+                    };
+                })
+            );
 
             // Modify the order object to include detailed product information in the cart
             const orderWithCartInfo = {
                 ...order,
-                products: cartWithProductInfo.map(cartItem => cartItem.productInfo).filter(productInfo => productInfo !== null),
+                products: cartWithProductInfo
+                    .map((cartItem) => cartItem.productInfo)
+                    .filter((productInfo) => productInfo !== null),
             };
 
             return orderWithCartInfo;
@@ -68,12 +71,10 @@ class OrderService {
         }
     };
 
-
     /**
      * Create a new order
      */
     public createOrder = async (orderData: any): Promise<Order> => {
-
         const currentDate = new Date();
         const expectedDeliveryDate = new Date(currentDate);
         expectedDeliveryDate.setDate(currentDate.getDate() + 3);
@@ -84,16 +85,18 @@ class OrderService {
             orderValue: orderData.orderValue,
             quantity: orderData.quantity,
             client: orderData.client,
-            expectedDeliveryDate: expectedDeliveryDate.toISOString().split('T')[0], // Format as 'YYYY-MM-DD'
+            expectedDeliveryDate: expectedDeliveryDate
+                .toISOString()
+                .split('T')[0], // Format as 'YYYY-MM-DD'
             status: orderData.status,
-            paymentMethod : orderData.paymentMethod,
+            paymentMethod: orderData.paymentMethod,
         } as DeepPartial<Order>);
 
         // If 'customer' is provided in orderData, find customer.
         if (orderData.customer && orderData.customer.customerId) {
             try {
                 const customer = await this.customerRepository.findOneOrFail({
-                    where: { id: orderData.customer.customerId }
+                    where: { id: orderData.customer.customerId },
                 });
                 newOrder.customer = customer;
             } catch (error) {
@@ -114,15 +117,45 @@ class OrderService {
                         });
 
                         if (product) {
-                            productEntities.push(product);
+
+                            // Check if the product is in the customer's cart
+                            const cartItem = orderData.customer.cart.find(
+                                (item) => item.productId === product.id
+                            );
+
+                            if (cartItem) {
+                                // Reduce inventoryQuantity by the quantity in the customer's cart
+                                product.inventoryQuantity -= cartItem.quantity;
+
+                                // Check if inventoryQuantity is non-negative
+                                if (product.inventoryQuantity < 0) {
+                                    console.error('Insufficient inventory for product:', product.name);
+                                    throw new Error('Insufficient inventory');
+                                }
+
+                                // Save the updated product to the database
+                                await this.productRepository.save(product);
+
+                                productEntities.push(product);
+                            } else {
+                                console.error('Product is not in the customer\'s cart:', product.name);
+                            }
                         } else {
-                            console.error('Product not found with ID:', productData.productId);
+                            console.error(
+                                'Product not found with ID:',
+                                productData.productId
+                            );
                         }
                     } catch (error) {
-                        console.error('Error retrieving product:', error.message);
+                        console.error(
+                            'Error retrieving product:',
+                            error.message
+                        );
                     }
                 } else {
-                    console.error('Product ID is missing in product data. Cannot associate product with order.');
+                    console.error(
+                        'Product ID is missing in product data. Cannot associate product with order.'
+                    );
                 }
             }
 
@@ -140,13 +173,18 @@ class OrderService {
 
             return newOrder;
         }
-        
+
         // Save the new order with its relationships
         await this.orderRepository.save(newOrder);
 
+        // // Empty the customer's cart after the order is made
+        // if (newOrder.status === 'order made' && newOrder.customer) {
+        //     newOrder.customer.cart = [];
+        //     await this.customerRepository.save(newOrder.customer);
+        // }
+
         return newOrder;
     };
-
 
     /**
      * Update an order by ID
@@ -189,8 +227,6 @@ class OrderService {
         return orderToDelete;
     };
 
-
-
     /**
      * Process Payment for an Order
      */
@@ -221,29 +257,28 @@ class OrderService {
     // private async processAirtelMoneyPayment(order: Order): Promise<boolean> {
     //     // Implement logic to interact with Airtel Money API
     //     // Set order status based on payment success or failure
-    
+
     //     const paymentSuccess = /* Your logic to determine if payment is successful or not */;
 
     //     // Set order status based on payment success or failure
     //     order.status = paymentSuccess ? 'confirmed' : 'cancelled';
-    
+
     //     // Return true if payment is successful, false otherwise
     //     return paymentSuccess;
     // }
-    
+
     // private async processMTNMobileMoneyPayment(order: Order): Promise<boolean> {
     //     // Implement logic to interact with MTN Mobile Money API
     //     // Set order status based on payment success or failure
-    
+
     //     const paymentSuccess = /* Your logic to determine if payment is successful or not */;
 
     //     // Set order status based on payment success or failure
     //     order.status = paymentSuccess ? 'confirmed' : 'cancelled';
-    
+
     //     // Return true if payment is successful, false otherwise
     //     return paymentSuccess;
     // }
-    
 }
 
 export default new OrderService();

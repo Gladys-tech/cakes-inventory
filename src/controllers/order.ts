@@ -101,9 +101,7 @@ class OrderController {
         const orderId = req.params.id;
 
         try {
-            const deletedOrder = await OrderService.deleteOrder(
-                orderId
-            );
+            const deletedOrder = await OrderService.deleteOrder(orderId);
 
             if (!deletedOrder) {
                 return res.status(404).json({

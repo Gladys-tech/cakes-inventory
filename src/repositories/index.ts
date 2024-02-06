@@ -4,4 +4,10 @@ import { ProductRepository } from './product';
 import { CustomerRepository } from './customer';
 import { OrderRepository } from './order';
 
-export { UserRepository, ShopRepository, ProductRepository, CustomerRepository, OrderRepository };
+export {
+    UserRepository,
+    ShopRepository,
+    ProductRepository,
+    CustomerRepository,
+    OrderRepository,
+};

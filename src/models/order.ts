@@ -10,7 +10,6 @@ import {
 import { Customer } from './customer';
 import { Product } from './product';
 
-
 export enum PaymentMethod {
     AirtelMoney = 'airtel_money',
     MTNMobileMoney = 'mtn_mobile_money',
@@ -76,7 +75,14 @@ export class Order {
 
     @Column({
         type: 'enum',
-        enum: ['order made', 'confirmed', 'transit', 'delivered', 'cancelled', 'delayed'],
+        enum: [
+            'order made',
+            'confirmed',
+            'transit',
+            'delivered',
+            'cancelled',
+            'delayed',
+        ],
         default: 'order made',
     })
     status: string;
