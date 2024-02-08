@@ -7,7 +7,6 @@ import cloudinary from '../utils/cloudinary';
 // import sharp from 'sharp';
 // import { writeFile, unlink } from 'fs/promises';
 
-
 class ProductService {
     private readonly productRepository: typeof ProductRepository;
 
@@ -39,19 +38,16 @@ class ProductService {
         return product || null;
     };
 
-
-     /**
+    /**
      * Add product images
      */
     private async addProductImages(
         product: Product,
         imageUrls: string[]
     ): Promise<void> {
-
         const uploadedImageUrls = await Promise.all(
             imageUrls.slice(0, 6).map(async (url, index) => {
                 try {
-
                     // const compressedBuffer = await sharp(url)
                     //     .resize(300, 300)
                     //     .toBuffer();
@@ -62,13 +58,12 @@ class ProductService {
 
                     // console.log('Uploading image:', url);
 
-
                     // Upload the temporary file to Cloudinary
                     // const result = await cloudinary.uploader.upload(url);
                     const result = await cloudinary.uploader.upload(url, {
-                        width: 300, 
-                        height: 300, 
-                        crop: "fill", 
+                        width: 300,
+                        height: 300,
+                        crop: 'fill',
                     });
                     if (index === 0) {
                         // Set the first image as the primary image
@@ -80,19 +75,22 @@ class ProductService {
                     // await unlink(tempFilePath);
                     return result.secure_url;
                 } catch (error) {
-                    console.error('Error uploading image to Cloudinary:', error);
+                    console.error(
+                        'Error uploading image to Cloudinary:',
+                        error
+                    );
                     throw error;
                 }
             })
-        );        
-    
+        );
+
         const productImages = uploadedImageUrls.map((url) => {
             const image = new ProductImage();
             image.imageUrl = url;
             image.product = product;
             return image;
         });
-    
+
         await this.productRepository.manager.save(ProductImage, productImages);
         await this.productRepository.save(product);
     }
@@ -127,14 +125,14 @@ class ProductService {
         await this.productRepository.save(newProduct);
 
         if (productData.imageUrls && productData.imageUrls.length > 0) {
-            await this.addProductImages(newProduct, productData.imageUrls.slice(0, 6));
+            await this.addProductImages(
+                newProduct,
+                productData.imageUrls.slice(0, 6)
+            );
         }
 
         return newProduct;
     };
-
-
-    
 
     /**
      * Update a product by ID

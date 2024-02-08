@@ -37,7 +37,7 @@ class CustomerService {
             location: customerData.location,
             telphone: customerData.telphone,
             isEmailVerified: customerData.isEmailVerified,
-            cart: customerData.cart,
+            cart: customerData.cart || [], // Initialize cart as an empty array if not provided
         });
 
         await this.customerRepository.save(newCustomer);

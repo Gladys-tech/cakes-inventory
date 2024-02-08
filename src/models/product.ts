@@ -37,8 +37,9 @@ export class Product {
     @JoinTable()
     shops: Shop[];
 
-    @ManyToMany(() => Order, (order) => order.products)
-    @JoinTable()
+    @ManyToMany(() => Order, (order) => order.products, {
+        cascade: ['remove'],
+    })
     orders: Order[];
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })

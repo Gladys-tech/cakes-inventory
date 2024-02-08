@@ -1,3 +1,9 @@
+interface OrderCreationResponse {
+    order?: Order;
+    message?: string;
+    status: 'Success' | 'EmptyCartError' | 'OtherError'; // Add more statuses as needed
+}
+
 import { Request, Response } from 'express';
 import { Order } from '../models/order';
 import {
@@ -71,10 +77,13 @@ class OrderService {
         }
     };
 
+
     /**
      * Create a new order
      */
-    public createOrder = async (orderData: any): Promise<Order> => {
+
+
+    public createOrder = async (orderData: any): Promise<OrderCreationResponse> => {
         const currentDate = new Date();
         const expectedDeliveryDate = new Date(currentDate);
         expectedDeliveryDate.setDate(currentDate.getDate() + 3);
@@ -99,92 +108,101 @@ class OrderService {
                     where: { id: orderData.customer.customerId },
                 });
                 newOrder.customer = customer;
-            } catch (error) {
-                console.error('Error retrieving customer:', error.message);
-            }
-        }
 
-        // If 'products' are provided in orderData, find or create the product entities
-        if (orderData.products && orderData.products.length > 0) {
-            const productEntities: Product[] = [];
+                // If 'cart' is available in the customer data, proceed with updating products
+                if (customer.cart && customer.cart.length > 0) {
+                    const productEntities: Product[] = [];
 
-            for (const productData of orderData.products) {
-                if (productData.productId) {
-                    try {
-                        // Find existing product by ID
-                        const product = await this.productRepository.findOne({
-                            where: { id: productData.productId },
-                        });
+                    // Loop through the customer's cart before checking products
+                    for (const cartItem of customer.cart) {
+                        try {
+                            // Find existing product by ID
+                            const product = await this.productRepository.findOne({
+                                where: { id: cartItem.productId },
+                            });
 
-                        if (product) {
+                            if (product) {
+                                // Check if the product is in the customer's cart
 
-                            // Check if the product is in the customer's cart
-                            const cartItem = orderData.customer.cart.find(
-                                (item) => item.productId === product.id
-                            );
-
-                            if (cartItem) {
                                 // Reduce inventoryQuantity by the quantity in the customer's cart
-                                product.inventoryQuantity -= cartItem.quantity;
+                                const reducedQuantity = Math.min(
+                                    cartItem.quantity,
+                                    product.inventoryQuantity
+                                );
+
+                                product.inventoryQuantity -= reducedQuantity;
 
                                 // Check if inventoryQuantity is non-negative
                                 if (product.inventoryQuantity < 0) {
-                                    console.error('Insufficient inventory for product:', product.name);
+                                    console.error(
+                                        'Insufficient inventory for product:',
+                                        product.name
+                                    );
                                     throw new Error('Insufficient inventory');
                                 }
 
                                 // Save the updated product to the database
                                 await this.productRepository.save(product);
 
+
                                 productEntities.push(product);
                             } else {
-                                console.error('Product is not in the customer\'s cart:', product.name);
+                                console.error(
+                                    'Product not found with ID:',
+                                    cartItem.productId
+                                );
                             }
-                        } else {
+                        } catch (error) {
                             console.error(
-                                'Product not found with ID:',
-                                productData.productId
+                                'Error retrieving product:',
+                                error.message
                             );
                         }
-                    } catch (error) {
-                        console.error(
-                            'Error retrieving product:',
-                            error.message
-                        );
                     }
+
+                    // Set the products for the order
+                    newOrder.products = productEntities;
                 } else {
-                    console.error(
-                        'Product ID is missing in product data. Cannot associate product with order.'
-                    );
+                    // If the cart is empty, throw an error or handle it as needed
+                    console.error('Customer cart is empty. Cannot create an order.');
+                    return {
+                        message: 'Customer cart is empty. Cannot create an order.',
+                        status: 'EmptyCartError',
+                    };
                 }
+            } catch (error) {
+                console.error('Error retrieving customer:', error.message);
             }
-
-            // Set the products for the order
-            newOrder.products = productEntities;
-
-            // Save the new order with its relationships
-            await this.orderRepository.save(newOrder);
-
-            // Reload the order with products to ensure the correct association is reflected in the response
-            await this.orderRepository.findOneOrFail({
-                where: { id: newOrder.id },
-                relations: ['customer', 'products'],
-            });
-
-            return newOrder;
         }
 
         // Save the new order with its relationships
         await this.orderRepository.save(newOrder);
 
-        // // Empty the customer's cart after the order is made
-        // if (newOrder.status === 'order made' && newOrder.customer) {
-        //     newOrder.customer.cart = [];
-        //     await this.customerRepository.save(newOrder.customer);
-        // }
+        // Reload the order with products to ensure the correct association is reflected in the response
+        const savedOrder = await this.orderRepository.findOneOrFail({
+            where: { id: newOrder.id },
+            relations: ['customer', 'products'],
+        });
 
-        return newOrder;
+        // Empty the customer's cart after the order is made
+        if (savedOrder.status === 'order made' && savedOrder.customer) {
+            savedOrder.customer.cart = [];
+            await this.customerRepository.save(savedOrder.customer);
+        }
+
+        // return savedOrder;
+        // return newOrder;
+        return {
+            status: 'Success',
+            order: savedOrder,
+        };
     };
+
+
+
+
+
+
 
     /**
      * Update an order by ID
