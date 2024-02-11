@@ -71,7 +71,6 @@ export class Customer {
     @Column({ nullable: true, default: false })
     isEmailVerified: boolean;
 
-    
     @Column({ type: 'json', nullable: true })
     // cart: Array<{ productId: string; quantity: number }> | null;
     cart: any;

@@ -4,8 +4,9 @@ import { ProductRepository } from '../repositories';
 import { Shop } from '../models/shop';
 import { ProductImage } from '../models/productImage';
 import cloudinary from '../utils/cloudinary';
-// import sharp from 'sharp';
-// import { writeFile, unlink } from 'fs/promises';
+import sharp from 'sharp';
+import { writeFile, unlink } from 'fs/promises';
+import axios from 'axios';
 
 class ProductService {
     private readonly productRepository: typeof ProductRepository;
@@ -48,35 +49,50 @@ class ProductService {
         const uploadedImageUrls = await Promise.all(
             imageUrls.slice(0, 6).map(async (url, index) => {
                 try {
-                    // const compressedBuffer = await sharp(url)
-                    //     .resize(300, 300)
-                    //     .toBuffer();
+                    // Fetch the image
+                    const response = await axios.get(url, { responseType: 'arraybuffer' });
+                    const buffer = Buffer.from(response.data);
 
-                    // // Save the compressed image to a temporary file
-                    // const tempFilePath = `temp-${index}.jpg`;
-                    // await writeFile(tempFilePath, compressedBuffer, 'binary');
-
-                    // console.log('Uploading image:', url);
-
-                    // Upload the temporary file to Cloudinary
-                    // const result = await cloudinary.uploader.upload(url);
-                    const result = await cloudinary.uploader.upload(url, {
-                        width: 300,
-                        height: 300,
-                        crop: 'fill',
+                    // Resize the image based on whether it's primary or thumbnail
+                    let resizedImageBuffer;
+                    if (product.primaryImageUrl) {
+                        // Resize primary image to 500x500 pixels
+                        resizedImageBuffer = await sharp(buffer)
+                            .resize(500, 500)
+                            .toBuffer();
+                    } else {
+                        // Resize thumbnail image to 300x300 pixels
+                        resizedImageBuffer = await sharp(buffer)
+                            .resize(250, 250)
+                            .toBuffer();
+                    }
+                    // Upload the resized images to Cloudinary
+                    const result: any = await new Promise((resolve, reject) => {
+                        const uploadStream = cloudinary.uploader.upload_stream(
+                            { resource_type: 'image' },
+                            (error, result) => {
+                                if (error) {
+                                    console.error('Error uploading image to Cloudinary:', error);
+                                    reject(error);
+                                } else {
+                                    console.log('Upload Result:', result);
+                                    resolve(result);
+                                }
+                            }
+                        );
+                        uploadStream.end(resizedImageBuffer);
                     });
+
                     if (index === 0) {
                         // Set the first image as the primary image
                         product.primaryImageUrl = result.secure_url;
                     }
                     console.log('Upload Result:', result);
-
-                    // Delete the temporary file after uploading
-                    // await unlink(tempFilePath);
+                    
                     return result.secure_url;
                 } catch (error) {
                     console.error(
-                        'Error uploading image to Cloudinary:',
+                        'Error processing image with sharp and uploading to Cloudinary:',
                         error
                     );
                     throw error;

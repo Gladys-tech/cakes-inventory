@@ -77,13 +77,13 @@ class OrderService {
         }
     };
 
-
     /**
      * Create a new order
      */
 
-
-    public createOrder = async (orderData: any): Promise<OrderCreationResponse> => {
+    public createOrder = async (
+        orderData: any
+    ): Promise<OrderCreationResponse> => {
         const currentDate = new Date();
         const expectedDeliveryDate = new Date(currentDate);
         expectedDeliveryDate.setDate(currentDate.getDate() + 3);
@@ -117,9 +117,10 @@ class OrderService {
                     for (const cartItem of customer.cart) {
                         try {
                             // Find existing product by ID
-                            const product = await this.productRepository.findOne({
-                                where: { id: cartItem.productId },
-                            });
+                            const product =
+                                await this.productRepository.findOne({
+                                    where: { id: cartItem.productId },
+                                });
 
                             if (product) {
                                 // Check if the product is in the customer's cart
@@ -144,7 +145,6 @@ class OrderService {
                                 // Save the updated product to the database
                                 await this.productRepository.save(product);
 
-
                                 productEntities.push(product);
                             } else {
                                 console.error(
@@ -164,9 +164,12 @@ class OrderService {
                     newOrder.products = productEntities;
                 } else {
                     // If the cart is empty, throw an error or handle it as needed
-                    console.error('Customer cart is empty. Cannot create an order.');
+                    console.error(
+                        'Customer cart is empty. Cannot create an order.'
+                    );
                     return {
-                        message: 'Customer cart is empty. Cannot create an order.',
+                        message:
+                            'Customer cart is empty. Cannot create an order.',
                         status: 'EmptyCartError',
                     };
                 }
@@ -197,12 +200,6 @@ class OrderService {
             order: savedOrder,
         };
     };
-
-
-
-
-
-
 
     /**
      * Update an order by ID
