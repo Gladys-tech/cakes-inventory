@@ -24,7 +24,7 @@ export class Supplier {
     @Column({ type: 'int', default: 0 }) // Inventory quantity received from the supplier
     suppliedQuantity: number;
 
-    @Column({ type: 'int', default: 0 , nullable: true}) // Returned quantity to the supplier
+    @Column({ type: 'int', default: 0, nullable: true }) // Returned quantity to the supplier
     returnedQuantity: number;
 
     // Define many-to-one relationship with Product

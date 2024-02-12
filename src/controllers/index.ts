@@ -3,6 +3,7 @@ import ShopController from './shop';
 import ProductController from './product';
 import CustomerController from './customer';
 import OrderController from './order';
+import SupplierController from './supplier';
 
 export {
     CustomerController,
@@ -10,4 +11,5 @@ export {
     ShopController,
     ProductController,
     OrderController,
+    SupplierController
 };

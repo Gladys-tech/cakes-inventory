@@ -5,10 +5,12 @@ import {
     ManyToMany,
     JoinTable,
     OneToMany,
+    ManyToOne,
 } from 'typeorm';
 import { Shop } from './shop';
 import { Order } from './order';
 import { ProductImage } from './productImage';
+import { Supplier } from './supplier';
 
 @Entity()
 export class Product {
@@ -26,6 +28,11 @@ export class Product {
 
     @Column({ type: 'int', default: 0 }) // New field for inventory quantity
     inventoryQuantity: number;
+
+    @ManyToOne(() => Supplier, (supplier) => supplier.product, {
+        nullable: true, // Make the relationship optional
+    })
+    supplier: Supplier;
 
     @Column({ nullable: true })
     primaryImageUrl: string;

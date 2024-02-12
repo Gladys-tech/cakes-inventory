@@ -10,6 +10,7 @@ import {
     OrderRoutes,
     ProductRoutes,
     ShopRoutes,
+    SupplierRoutes,
     UserRoutes,
 } from './api/routes';
 import { Logger } from '../logger';
@@ -48,6 +49,7 @@ routes.push(new ShopRoutes(app));
 routes.push(new ProductRoutes(app));
 routes.push(new CustomerRoutes(app));
 routes.push(new OrderRoutes(app));
+routes.push(new SupplierRoutes(app));
 
 // Health Check
 app.get('/health', (req: Request, res: Response) => {

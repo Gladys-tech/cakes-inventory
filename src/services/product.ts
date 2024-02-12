@@ -50,7 +50,9 @@ class ProductService {
             imageUrls.slice(0, 6).map(async (url, index) => {
                 try {
                     // Fetch the image
-                    const response = await axios.get(url, { responseType: 'arraybuffer' });
+                    const response = await axios.get(url, {
+                        responseType: 'arraybuffer',
+                    });
                     const buffer = Buffer.from(response.data);
 
                     // Resize the image based on whether it's primary or thumbnail
@@ -72,7 +74,10 @@ class ProductService {
                             { resource_type: 'image' },
                             (error, result) => {
                                 if (error) {
-                                    console.error('Error uploading image to Cloudinary:', error);
+                                    console.error(
+                                        'Error uploading image to Cloudinary:',
+                                        error
+                                    );
                                     reject(error);
                                 } else {
                                     console.log('Upload Result:', result);
@@ -88,7 +93,7 @@ class ProductService {
                         product.primaryImageUrl = result.secure_url;
                     }
                     console.log('Upload Result:', result);
-                    
+
                     return result.secure_url;
                 } catch (error) {
                     console.error(
