@@ -8,6 +8,7 @@ import { CommonRoutesConfig } from './common/routes.config';
 import {
     CustomerRoutes,
     OrderRoutes,
+    PaymentRoutes,
     ProductRoutes,
     ShopRoutes,
     SupplierRoutes,
@@ -50,6 +51,7 @@ routes.push(new ProductRoutes(app));
 routes.push(new CustomerRoutes(app));
 routes.push(new OrderRoutes(app));
 routes.push(new SupplierRoutes(app));
+routes.push(new PaymentRoutes(app));
 
 // Health Check
 app.get('/health', (req: Request, res: Response) => {

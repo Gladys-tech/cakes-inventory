@@ -4,5 +4,14 @@ import ProductRoutes from './product';
 import CustomerRoutes from './customer';
 import OrderRoutes from './order';
 import SupplierRoutes from './supplier';
+import PaymentRoutes from './payment';
 
-export { UserRoutes, ShopRoutes, ProductRoutes, CustomerRoutes, OrderRoutes, SupplierRoutes, };
+export {
+    UserRoutes,
+    ShopRoutes,
+    ProductRoutes,
+    CustomerRoutes,
+    OrderRoutes,
+    SupplierRoutes,
+    PaymentRoutes,
+};

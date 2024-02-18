@@ -2,8 +2,6 @@ import { Request, Response } from 'express';
 import { SupplierService } from '../services';
 
 class SupplierController {
-
-
     // getting all suppliers
     public getSuppliers = async (req: Request, res: Response) => {
         const suppliers = await SupplierService.getAllSuppliers(req, res);
@@ -49,10 +47,13 @@ class SupplierController {
     // creating a supplier
     public createSupplier = async (req: Request, res: Response) => {
         const supplierData = req.body;
-        const productId = supplierData.productId; 
+        const productId = supplierData.productId;
 
         try {
-            const newSupplier = await SupplierService.createSupplier(supplierData, productId);
+            const newSupplier = await SupplierService.createSupplier(
+                supplierData,
+                productId
+            );
             res.status(201).json({
                 status: 'CREATED',
                 supplier: newSupplier,
@@ -70,10 +71,14 @@ class SupplierController {
     public updateSupplier = async (req: Request, res: Response) => {
         const supplierId = req.params.id;
         const supplierData = req.body;
-        const productId = supplierData.productId; 
+        const productId = supplierData.productId;
 
         try {
-            const updatedSupplier = await SupplierService.updateSupplier(supplierId, supplierData, productId);
+            const updatedSupplier = await SupplierService.updateSupplier(
+                supplierId,
+                supplierData,
+                productId
+            );
 
             if (!updatedSupplier) {
                 res.status(404).json({
@@ -101,7 +106,9 @@ class SupplierController {
         const supplierId = req.params.id;
 
         try {
-            const deletedSupplier = await SupplierService.deleteSupplier(supplierId);
+            const deletedSupplier = await SupplierService.deleteSupplier(
+                supplierId
+            );
 
             if (!deletedSupplier) {
                 res.status(404).json({
@@ -123,7 +130,6 @@ class SupplierController {
             });
         }
     };
-    
 }
 
 export default new SupplierController();

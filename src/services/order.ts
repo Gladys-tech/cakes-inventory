@@ -77,6 +77,38 @@ class OrderService {
         }
     };
 
+
+    // // Define a function to generate the client name
+    // private generateClientName(customer: Customer): string {
+    //     if (customer.firstName && customer.lastName) {
+    //         return `${customer.firstName} ${customer.lastName}`;
+    //     }
+    //     return ''; // Return an empty string if either firstName or lastName is undefined
+    // }
+
+
+    /**
+ * Generate client name based on customer's first and last names
+ */
+    private async generateClientName(customerId: string): Promise<string> {
+        try {
+            const customer = await this.customerRepository.findOneOrFail({
+                where: { id: customerId },
+            });
+
+            if (customer.firstName && customer.lastName) {
+                return `${customer.firstName} ${customer.lastName}`;
+            }
+
+            return ''; // Return an empty string if either firstName or lastName is undefined
+        } catch (error) {
+            console.error('Error retrieving customer:', error.message);
+            return ''; // Return an empty string in case of an error
+        }
+    }
+
+
+
     /**
      * Create a new order
      */
@@ -91,9 +123,10 @@ class OrderService {
         // Create a new order instance with basic data
         const newOrder = this.orderRepository.create({
             // serialNumber: orderData.serialNumber, // Add 'serialNumber' to your Order model if necessary
-            orderValue: orderData.orderValue,
-            quantity: orderData.quantity,
-            client: orderData.client,
+            orderValue: 0,
+            quantity: 0,
+            // client: orderData.client,
+            client: orderData.customer ? this.generateClientName(orderData.customer) : '',
             expectedDeliveryDate: expectedDeliveryDate
                 .toISOString()
                 .split('T')[0], // Format as 'YYYY-MM-DD'
@@ -113,8 +146,20 @@ class OrderService {
                 if (customer.cart && customer.cart.length > 0) {
                     const productEntities: Product[] = [];
 
+                    // Concatenate first and last names for the client field
+                    const clientName = customer.firstName && customer.lastName
+                        ? `${customer.firstName} ${customer.lastName}`
+                        : '';
+
+                    // Set the client field
+                    newOrder.client = clientName;
+
                     // Loop through the customer's cart before checking products
                     for (const cartItem of customer.cart) {
+
+                        const productId = cartItem.productId;
+                        const productQuantity = cartItem.quantity;
+
                         try {
                             // Find existing product by ID
                             const product =
@@ -141,6 +186,13 @@ class OrderService {
                                     );
                                     throw new Error('Insufficient inventory');
                                 }
+
+                                // Calculate orderValue based on product price and quantity
+                                newOrder.orderValue += product.price * reducedQuantity;
+
+                                // Update quantity
+                                newOrder.quantity += reducedQuantity;
+
 
                                 // Save the updated product to the database
                                 await this.productRepository.save(product);
@@ -188,10 +240,10 @@ class OrderService {
         });
 
         // Empty the customer's cart after the order is made
-        if (savedOrder.status === 'order made' && savedOrder.customer) {
-            savedOrder.customer.cart = [];
-            await this.customerRepository.save(savedOrder.customer);
-        }
+        // if (savedOrder.status === 'order made' && savedOrder.customer) {
+        //     savedOrder.customer.cart = [];
+        //     await this.customerRepository.save(savedOrder.customer);
+        // }
 
         // return savedOrder;
         // return newOrder;
@@ -200,6 +252,10 @@ class OrderService {
             order: savedOrder,
         };
     };
+
+
+
+
 
     /**
      * Update an order by ID

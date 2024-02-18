@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 // import { SoftDeletableEntity } from './abstracts/soft-deleteable';
 import { Order } from './order';
+import { Payment } from './payment';
 
 // /**
 //  * @schema customer
@@ -77,4 +78,8 @@ export class Customer {
 
     @OneToMany(() => Order, (order) => order.customer)
     orders: Order[];
+
+    @OneToMany(() => Payment, (payment) => payment.customer)
+    payments: Payment[];
+
 }

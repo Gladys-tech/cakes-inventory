@@ -6,9 +6,11 @@ import {
     JoinColumn,
     ManyToMany,
     JoinTable,
+    OneToMany,
 } from 'typeorm';
 import { Customer } from './customer';
 import { Product } from './product';
+import { Payment } from './payment';
 
 export enum PaymentMethod {
     AirtelMoney = 'airtel_money',
@@ -101,4 +103,8 @@ export class Order {
         default: PaymentMethod.CashOnDelivery,
     })
     paymentMethod: PaymentMethod;
+
+    @OneToMany(() => Payment, (payment) => payment.order)
+    payments: Payment[];
+
 }

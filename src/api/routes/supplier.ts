@@ -13,18 +13,22 @@ export default class SupplierRoutes extends CommonRoutesConfig {
         // Apply authenticateToken middleware to protect these routes
         // this.app.use('/products', authenticateToken);
 
-         // Read
-         this.app.route('/suppliers').get(SupplierController.getSuppliers);
-         this.app.route('/suppliers/:id').get(SupplierController.getSupplierById);
- 
-         // Create
-         this.app.route('/suppliers').post(SupplierController.createSupplier);
- 
-         // Update
-         this.app.route('/suppliers/:id').put(SupplierController.updateSupplier);
- 
-         // Delete
-         this.app.route('/suppliers/:id').delete(SupplierController.deleteSupplier);
+        // Read
+        this.app.route('/suppliers').get(SupplierController.getSuppliers);
+        this.app
+            .route('/suppliers/:id')
+            .get(SupplierController.getSupplierById);
+
+        // Create
+        this.app.route('/suppliers').post(SupplierController.createSupplier);
+
+        // Update
+        this.app.route('/suppliers/:id').put(SupplierController.updateSupplier);
+
+        // Delete
+        this.app
+            .route('/suppliers/:id')
+            .delete(SupplierController.deleteSupplier);
 
         return this.app;
     }

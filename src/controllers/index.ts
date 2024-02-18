@@ -4,6 +4,7 @@ import ProductController from './product';
 import CustomerController from './customer';
 import OrderController from './order';
 import SupplierController from './supplier';
+import PaymentController from './payment';
 
 export {
     CustomerController,
@@ -11,5 +12,6 @@ export {
     ShopController,
     ProductController,
     OrderController,
-    SupplierController
+    SupplierController,
+    PaymentController,
 };

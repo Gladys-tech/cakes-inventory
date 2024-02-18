@@ -42,14 +42,14 @@ class SupplierService {
         }
     };
 
-
-
     /**
      * Create a new supplier
      */
-    public createSupplier = async (supplierData: any, productId: string): Promise<Supplier> => {
+    public createSupplier = async (
+        supplierData: any,
+        productId: string
+    ): Promise<Supplier> => {
         try {
-
             const product = await this.productRepository.findOneOrFail({
                 where: { id: productId },
             });
@@ -65,11 +65,13 @@ class SupplierService {
                 contactPerson: supplierData.contactPerson,
                 contactEmail: supplierData.contactEmail,
                 suppliedQuantity: supplierData.suppliedQuantity,
-                returnedQuantity:  0, // Set returnedQuantity to 0 by default
+                returnedQuantity: 0, // Set returnedQuantity to 0 by default
                 product,
             });
 
-            const savedSupplier = await this.supplierRepository.save(newSupplier);
+            const savedSupplier = await this.supplierRepository.save(
+                newSupplier
+            );
             return savedSupplier;
         } catch (error) {
             console.error('Error creating supplier:', error.message);
@@ -86,10 +88,10 @@ class SupplierService {
         productId: string
     ): Promise<Supplier | null> => {
         try {
-
-            const supplierToUpdate = await this.supplierRepository.findOneOrFail({
-                where: { id: supplierId },
-            });
+            const supplierToUpdate =
+                await this.supplierRepository.findOneOrFail({
+                    where: { id: supplierId },
+                });
 
             supplierToUpdate.name = supplierData.name;
             supplierToUpdate.contactPerson = supplierData.contactPerson;
@@ -97,8 +99,6 @@ class SupplierService {
             supplierToUpdate.suppliedQuantity = supplierData.suppliedQuantity;
             supplierToUpdate.returnedQuantity = supplierData.returnedQuantity;
 
-
-            
             // Update product's inventoryQuantity by adding the new suppliedQuantity
             const product = await this.productRepository.findOneOrFail({
                 where: { id: productId },
@@ -115,7 +115,6 @@ class SupplierService {
             return null;
         }
     };
-
 
     /**
      * Delete a supplier by ID
@@ -140,9 +139,6 @@ class SupplierService {
             return null;
         }
     };
-
-    
 }
 
 export default new SupplierService();
-
