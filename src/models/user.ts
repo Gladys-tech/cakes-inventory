@@ -16,6 +16,7 @@ import { DbAwareColumn } from '../utils/db-aware-column';
 import { generateEntityId } from '../utils/generate-entity-id';
 import { Address } from './address'; //importing the address entity here
 import { Shop } from './shop';
+import { Delivery } from './delivery';
 
 export enum UserRole {
     ADMIN = 'admin',
@@ -136,6 +137,10 @@ export class User extends SoftDeletableEntity {
     @OneToOne(() => Address, (address) => address.user, { nullable: true })
     @JoinColumn()
     address: Address;
+
+    @OneToOne(() => Delivery, (delivery) => delivery.user)
+    @JoinColumn()
+    delivery: Delivery;
 
     @ManyToMany(() => Shop, (shop) => shop.users)
     @JoinTable()

@@ -5,6 +5,7 @@ import CustomerService from './customer';
 import OrderService from './order';
 import SupplierService from './supplier';
 import PaymentService from './payment';
+import DeliveryService from './delivery';
 
 export {
     CustomerService,
@@ -14,4 +15,5 @@ export {
     OrderService,
     SupplierService,
     PaymentService,
+    DeliveryService,
 };

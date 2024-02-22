@@ -5,6 +5,7 @@ import CustomerRoutes from './customer';
 import OrderRoutes from './order';
 import SupplierRoutes from './supplier';
 import PaymentRoutes from './payment';
+import DeliveryRoutes from './delivery';
 
 export {
     UserRoutes,
@@ -14,4 +15,5 @@ export {
     OrderRoutes,
     SupplierRoutes,
     PaymentRoutes,
+    DeliveryRoutes,
 };

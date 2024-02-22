@@ -77,19 +77,11 @@ class OrderService {
         }
     };
 
-
-    // // Define a function to generate the client name
-    // private generateClientName(customer: Customer): string {
-    //     if (customer.firstName && customer.lastName) {
-    //         return `${customer.firstName} ${customer.lastName}`;
-    //     }
-    //     return ''; // Return an empty string if either firstName or lastName is undefined
-    // }
-
+    
 
     /**
- * Generate client name based on customer's first and last names
- */
+     * Generate client name based on customer's first and last names
+     */
     private async generateClientName(customerId: string): Promise<string> {
         try {
             const customer = await this.customerRepository.findOneOrFail({
@@ -106,8 +98,6 @@ class OrderService {
             return ''; // Return an empty string in case of an error
         }
     }
-
-
 
     /**
      * Create a new order
@@ -126,7 +116,9 @@ class OrderService {
             orderValue: 0,
             quantity: 0,
             // client: orderData.client,
-            client: orderData.customer ? this.generateClientName(orderData.customer) : '',
+            client: orderData.customer
+                ? this.generateClientName(orderData.customer)
+                : '',
             expectedDeliveryDate: expectedDeliveryDate
                 .toISOString()
                 .split('T')[0], // Format as 'YYYY-MM-DD'
@@ -147,16 +139,16 @@ class OrderService {
                     const productEntities: Product[] = [];
 
                     // Concatenate first and last names for the client field
-                    const clientName = customer.firstName && customer.lastName
-                        ? `${customer.firstName} ${customer.lastName}`
-                        : '';
+                    const clientName =
+                        customer.firstName && customer.lastName
+                            ? `${customer.firstName} ${customer.lastName}`
+                            : '';
 
                     // Set the client field
                     newOrder.client = clientName;
 
                     // Loop through the customer's cart before checking products
                     for (const cartItem of customer.cart) {
-
                         const productId = cartItem.productId;
                         const productQuantity = cartItem.quantity;
 
@@ -188,11 +180,11 @@ class OrderService {
                                 }
 
                                 // Calculate orderValue based on product price and quantity
-                                newOrder.orderValue += product.price * reducedQuantity;
+                                newOrder.orderValue +=
+                                    product.price * reducedQuantity;
 
                                 // Update quantity
                                 newOrder.quantity += reducedQuantity;
-
 
                                 // Save the updated product to the database
                                 await this.productRepository.save(product);
@@ -252,10 +244,6 @@ class OrderService {
             order: savedOrder,
         };
     };
-
-
-
-
 
     /**
      * Update an order by ID

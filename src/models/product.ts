@@ -6,11 +6,14 @@ import {
     JoinTable,
     OneToMany,
     ManyToOne,
+    OneToOne,
+    JoinColumn,
 } from 'typeorm';
 import { Shop } from './shop';
 import { Order } from './order';
 import { ProductImage } from './productImage';
 import { Supplier } from './supplier';
+import { Delivery } from './delivery';
 
 @Entity()
 export class Product {
@@ -48,6 +51,10 @@ export class Product {
         cascade: ['remove'],
     })
     orders: Order[];
+
+    @OneToOne(() => Delivery, (delivery) => delivery.product)
+    @JoinColumn()
+    delivery: Delivery;
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;

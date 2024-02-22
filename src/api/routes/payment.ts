@@ -1,7 +1,7 @@
 // payment.routes.ts
 import { Application } from 'express';
 import { CommonRoutesConfig } from '../../common/routes.config';
-import {PaymentController} from '../../controllers';
+import { PaymentController } from '../../controllers';
 
 export default class PaymentRoutes extends CommonRoutesConfig {
     constructor(app: Application) {
@@ -10,9 +10,11 @@ export default class PaymentRoutes extends CommonRoutesConfig {
 
     configureRoutes() {
         this.app.route('/payments').post(PaymentController.createPayment);
-        this.app.route('/payments/:id/status').put(PaymentController.updatePaymentStatus);
+        this.app.route('/payments/flutterwave').post(PaymentController.processFlutterwavePayment);
+        this.app
+            .route('/payments/:id/status')
+            .put(PaymentController.updatePaymentStatus);
 
         return this.app;
     }
 }
-
