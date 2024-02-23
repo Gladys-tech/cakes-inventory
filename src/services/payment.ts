@@ -96,10 +96,76 @@ class PaymentService {
     };
 
 
-     /**
-     * Process payment using Flutterwave
-     */
-     public processFlutterwavePayment = async (
+    /**
+    * Process payment using Flutterwave
+    */
+    //  public processFlutterwavePayment = async (
+    //     orderId: string,
+    //     customerId: string
+    // ): Promise<string> => {
+    //     // Fetch order and customer details
+    //     const order = await OrderRepository.findOne({
+    //         where: { id: orderId },
+    //     });
+
+    //     if (!order) {
+    //         throw new Error(`Order not found with id: ${orderId}`);
+    //     }
+
+    //     const customer = await CustomerRepository.findOne({
+    //         where: { id: customerId },
+    //     });
+
+    //     if (!customer) {
+    //         throw new Error(`Customer not found with id: ${customerId}`);
+    //     }
+
+    //     // Calculate the amount to be paid
+    //     const amountToPay = order.orderValue;
+
+    //     // Construct the Flutterwave payment payload
+    //     const paymentPayload = {
+    //         tx_ref: 'unique_transaction_reference', // Generate a unique transaction reference
+    //         amount: amountToPay,
+    //         currency: 'NGN', // Adjust the currency as needed
+    //         payment_type: 'card',
+    //         redirect_url: 'your_redirect_url',
+    //         order_id: orderId,
+    //         customer: {
+    //             email: customer.email,
+    //             // phonenumber: customer.phone,
+    //             name: `${customer.firstName} ${customer.lastName}`,
+    //         },
+    //         customizations: {
+    //             title: 'Your Payment Title',
+    //             description: 'Your Payment Description',
+    //             logo: 'your_logo_url',
+    //         },
+    //     };
+
+    //     // Make a request to Flutterwave API
+    //     const flutterwaveResponse = await axios.post(
+    //         'https://api.flutterwave.com/v3/charges?type=card',
+    //         paymentPayload,
+    //         {
+    //             headers: {
+    //                 Authorization: 'Bearer your_flutterwave_secret_key',
+    //             },
+    //         }
+    //     );
+
+    //     // Handle the Flutterwave API response
+    //     // Note: You need to implement proper error handling and response processing here
+
+    //     // Return the Flutterwave payment URL
+    //     return flutterwaveResponse.data.data.link;
+    // };
+
+
+
+    //  Process payment using MTN Sandbox
+
+    public processMTNPayment = async (
         orderId: string,
         customerId: string
     ): Promise<string> => {
@@ -123,44 +189,53 @@ class PaymentService {
         // Calculate the amount to be paid
         const amountToPay = order.orderValue;
 
-        // Construct the Flutterwave payment payload
+        // Construct the MTN Sandbox payment payload
         const paymentPayload = {
-            tx_ref: 'unique_transaction_reference', // Generate a unique transaction reference
             amount: amountToPay,
-            currency: 'NGN', // Adjust the currency as needed
-            payment_type: 'card',
-            redirect_url: 'your_redirect_url',
-            order_id: orderId,
-            customer: {
-                email: customer.email,
-                // phonenumber: customer.phone,
-                name: `${customer.firstName} ${customer.lastName}`,
+            currency: 'UGX', // Adjust the currency as needed
+            externalId: orderId,
+            payer: {
+                partyIdType: 'MSISDN',
+                partyId: customer.telphone, // Assuming phone number is used as partyId
             },
-            customizations: {
-                title: 'Your Payment Title',
-                description: 'Your Payment Description',
-                logo: 'your_logo_url',
-            },
+            payerMessage: 'Payment for order ' + orderId,
+            payeeNote: 'Thank you for your order!',
         };
 
-        // Make a request to Flutterwave API
-        const flutterwaveResponse = await axios.post(
-            'https://api.flutterwave.com/v3/charges?type=card',
+        // Generate a unique reference ID
+        const uniqueReferenceId = `myApp_${Date.now()}`;
+
+
+        // Make a request to MTN Sandbox API
+        const mtnSandboxResponse = await axios.post(
+            'https://sandbox.momodeveloper.mtn.com/collection/v1_0/requesttopay',
             paymentPayload,
             {
                 headers: {
-                    Authorization: 'Bearer your_flutterwave_secret_key',
+                    'Ocp-Apim-Subscription-Key': '8abead82195b481486600b89a90a4e2a',
+                    // 'Primary-Key': 'f2c872d50a194b6eac48393f1bf13aae',
+                    // 'Secondary-Key': '8abead82195b481486600b89a90a4e2a',
+                    'X-Reference-Id': uniqueReferenceId, // Generate a unique reference ID
                 },
             }
         );
 
-        // Handle the Flutterwave API response
-        // Note: You need to implement proper error handling and response processing here
+        // Check if the response is successful before accessing data
+        if (mtnSandboxResponse && mtnSandboxResponse.data && mtnSandboxResponse.data.link) {
+            // Return the MTN Sandbox payment URL
+            return mtnSandboxResponse.data.link;
+        } else {
+            throw new Error('Invalid response from MTN Sandbox API');
+        }
+    }
+     catch (error) {
+        // Handle errors here (log, report, etc.)
+        console.error('Error processing MTN payment:', error);
+        throw new Error('Error processing MTN payment');
+    }
 
-        // Return the Flutterwave payment URL
-        return flutterwaveResponse.data.data.link;
     };
-    
-}
+
+
 
 export default new PaymentService();

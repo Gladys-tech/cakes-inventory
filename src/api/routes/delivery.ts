@@ -11,13 +11,18 @@ export default class DeliveryRoutes extends CommonRoutesConfig {
     configureRoutes() {
         // Apply authenticateToken middleware to protect these routes
         // this.app.use('/deliveries', authenticateToken);
- 
+
         this.app.route('/deliveries').post(DeliveryController.createDelivery);
-        this.app.route('/deliveries/:id').get(DeliveryController.getDeliveryById);
-        this.app.route('/deliveries/:id').put(DeliveryController.updateDelivery);
-        this.app.route('/deliveries/:id').delete(DeliveryController.deleteDelivery);
-        
-        
+        this.app
+            .route('/deliveries/:id')
+            .get(DeliveryController.getDeliveryById);
+        this.app
+            .route('/deliveries/:id')
+            .put(DeliveryController.updateDelivery);
+        this.app
+            .route('/deliveries/:id')
+            .delete(DeliveryController.deleteDelivery);
+
         return this.app;
     }
 }

@@ -77,8 +77,6 @@ class OrderService {
         }
     };
 
-    
-
     /**
      * Generate client name based on customer's first and last names
      */

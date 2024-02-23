@@ -1,11 +1,8 @@
-
 import { Request, Response } from 'express';
 import { DeliveryService } from '../services';
 import { DeliveryStatus } from '../models/delivery';
 
 class DeliveryController {
-
-
     public createDelivery = async (req: Request, res: Response) => {
         try {
             const newDelivery = await DeliveryService.createDelivery(req.body);
@@ -53,7 +50,10 @@ class DeliveryController {
         const updatedData = req.body;
 
         try {
-            const updatedDelivery = await DeliveryService.updateDelivery(deliveryId, updatedData);
+            const updatedDelivery = await DeliveryService.updateDelivery(
+                deliveryId,
+                updatedData
+            );
 
             if (!updatedDelivery) {
                 return res.status(404).json({
@@ -79,7 +79,9 @@ class DeliveryController {
         const deliveryId = req.params.id;
 
         try {
-            const deletedDelivery = await DeliveryService.deleteDelivery(deliveryId);
+            const deletedDelivery = await DeliveryService.deleteDelivery(
+                deliveryId
+            );
 
             if (!deletedDelivery) {
                 return res.status(404).json({
@@ -100,9 +102,6 @@ class DeliveryController {
             });
         }
     };
-   
-
-    
 }
 
 export default new DeliveryController();
