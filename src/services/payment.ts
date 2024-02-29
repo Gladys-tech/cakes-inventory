@@ -7,6 +7,7 @@ import {
 } from '../repositories';
 import { DeepPartial } from 'typeorm';
 import { PaymentMethod } from '../models/order';
+import {v4 as uuidv4} from 'uuid';
 
 class PaymentService {
     private readonly paymentRepository: typeof PaymentRepository;
@@ -46,9 +47,10 @@ class PaymentService {
 
         // Check if the payment method is "cash on delivery"
         if (order.paymentMethod !== PaymentMethod.CashOnDelivery) {
-            throw new Error(`Payment can only be created for "cash on delivery" orders.`);
+            throw new Error(
+                `Payment can only be created for "cash on delivery" orders.`
+            );
         }
-
 
         // Fetch the associated Customer from the CustomerRepository
         const customer = await CustomerRepository.findOne({
@@ -95,10 +97,9 @@ class PaymentService {
         return existingPayment;
     };
 
-
     /**
-    * Process payment using Flutterwave
-    */
+     * Process payment using Flutterwave
+     */
     //  public processFlutterwavePayment = async (
     //     orderId: string,
     //     customerId: string
@@ -161,8 +162,6 @@ class PaymentService {
     //     return flutterwaveResponse.data.data.link;
     // };
 
-
-
     //  Process payment using MTN Sandbox
 
     public processMTNPayment = async (
@@ -203,8 +202,7 @@ class PaymentService {
         };
 
         // Generate a unique reference ID
-        const uniqueReferenceId = `myApp_${Date.now()}`;
-
+        const uniqueReferenceId = uuidv4();
 
         // Make a request to MTN Sandbox API
         const mtnSandboxResponse = await axios.post(
@@ -212,30 +210,32 @@ class PaymentService {
             paymentPayload,
             {
                 headers: {
-                    'Ocp-Apim-Subscription-Key': '8abead82195b481486600b89a90a4e2a',
-                    // 'Primary-Key': 'f2c872d50a194b6eac48393f1bf13aae',
-                    // 'Secondary-Key': '8abead82195b481486600b89a90a4e2a',
+                    'Ocp-Apim-Subscription-Key':
+                        '2642431f589b41d6b3afd4090c4d9460',
+                    // 'Primary-Key': '21b34be9bf4f42f9acefb0acef0b0a91',
+                    // 'Secondary-Key': '2642431f589b41d6b3afd4090c4d9460',
                     'X-Reference-Id': uniqueReferenceId, // Generate a unique reference ID
                 },
             }
         );
 
         // Check if the response is successful before accessing data
-        if (mtnSandboxResponse && mtnSandboxResponse.data && mtnSandboxResponse.data.link) {
+        if (
+            mtnSandboxResponse &&
+            mtnSandboxResponse.data &&
+            mtnSandboxResponse.data.link
+        ) {
             // Return the MTN Sandbox payment URL
             return mtnSandboxResponse.data.link;
         } else {
             throw new Error('Invalid response from MTN Sandbox API');
         }
-    }
-     catch (error) {
+    };
+    catch(error) {
         // Handle errors here (log, report, etc.)
         console.error('Error processing MTN payment:', error);
         throw new Error('Error processing MTN payment');
     }
-
-    };
-
-
+}
 
 export default new PaymentService();

@@ -99,6 +99,7 @@ export class Order {
     @JoinTable()
     products: Product[];
 
+
     @Column({
         type: 'enum',
         enum: PaymentMethod,

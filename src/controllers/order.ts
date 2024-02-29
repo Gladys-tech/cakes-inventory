@@ -63,6 +63,8 @@ class OrderController {
                 message: 'Error creating order.',
             });
         }
+
+
     };
 
     // updating an order
@@ -92,6 +94,44 @@ class OrderController {
             res.status(500).json({
                 status: 'INTERNAL_SERVER_ERROR',
                 message: 'Error updating order.',
+            });
+        }
+
+    };
+
+
+
+
+
+    // Update product status within an order
+    public updateProductStatus = async (req: Request, res: Response) => {
+        const orderId = req.params.orderId;
+        const productId = req.params.productId;
+        const productStatus = req.body.status;
+
+        try {
+            const updatedOrder = await OrderService.updateProductStatus(
+                orderId,
+                productId,
+                productStatus
+            );
+
+            if (!updatedOrder) {
+                return res.status(404).json({
+                    status: 'NOT_FOUND',
+                    message: `Order or Product not found.`,
+                });
+            }
+
+            res.status(200).json({
+                status: 'OK',
+                order: updatedOrder,
+            });
+        } catch (error) {
+            console.error('Error updating product status:', error);
+            res.status(500).json({
+                status: 'INTERNAL_SERVER_ERROR',
+                message: 'Error updating product status.',
             });
         }
     };

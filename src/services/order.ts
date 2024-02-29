@@ -177,6 +177,10 @@ class OrderService {
                                     throw new Error('Insufficient inventory');
                                 }
 
+                                // Set the product status based on orderData
+                                product.productStatus = orderData.status;
+
+
                                 // Calculate orderValue based on product price and quantity
                                 newOrder.orderValue +=
                                     product.price * reducedQuantity;
@@ -265,6 +269,42 @@ class OrderService {
         await this.orderRepository.save(updatedOrder);
 
         return updatedOrder;
+    };
+
+
+
+    /**
+        * Update product status within an order
+        */
+    public updateProductStatus = async (
+        orderId: string,
+        productId: string,
+        productStatus: string
+    ): Promise<Order | null> => {
+        const existingOrder = await this.orderRepository.findOne({
+            where: { id: orderId },
+            relations: ['products'],
+        });
+
+        if (!existingOrder) {
+            return null; // order not found
+        }
+
+        const existingProduct = existingOrder.products.find(
+            (product) => product.id === productId
+        );
+
+        if (!existingProduct) {
+            return null; // product not found in the order
+        }
+
+        // Update product status
+        existingProduct.productStatus = productStatus;
+
+        // Save the updated product to the database
+        await this.productRepository.save(existingProduct);
+
+        return existingOrder;
     };
 
     /**
