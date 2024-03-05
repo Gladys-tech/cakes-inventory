@@ -56,34 +56,8 @@ class PaymentController {
         }
     };
 
-    // public processFlutterwavePayment = async (req: Request, res: Response) => {
-    //     const { orderId, customerId } = req.body;
-
-    //     try {
-    //         // Update this line to use Flutterwave payment URL
-    //         const flutterwavePaymentUrl =
-    //             await PaymentService.processFlutterwavePayment(
-    //                 orderId,
-    //                 customerId
-    //             );
-
-    //         // You can choose to redirect the user to the Flutterwave payment URL
-    //         // or use it in your frontend to initiate the payment.
-
-    //         // For now, we're just returning the Flutterwave payment URL in the response.
-    //         res.status(200).json({
-    //             status: 'OK',
-    //             flutterwavePaymentUrl,
-    //         });
-    //     } catch (error) {
-    //         console.error('Error processing Flutterwave payment:', error);
-    //         res.status(500).json({
-    //             status: 'INTERNAL_SERVER_ERROR',
-    //             message: 'Error processing Flutterwave payment.',
-    //         });
-    //     }
-    // };
-
+   
+    
     public processMTNPayment = async (req: Request, res: Response) => {
         const { orderId, customerId } = req.body;
 

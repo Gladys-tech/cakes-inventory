@@ -23,7 +23,8 @@ export default class OrderRoutes extends CommonRoutesConfig {
         this.app.route('/orders/:id').put(OrderController.updateOrder);
 
         // Update product status within an order
-        this.app.route('/orders/:orderId/products/:productId/status')
+        this.app
+            .route('/orders/:orderId/products/:productId/status')
             .put(OrderController.updateProductStatus);
 
         // Delete

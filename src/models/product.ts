@@ -15,7 +15,6 @@ import { ProductImage } from './productImage';
 import { Supplier } from './supplier';
 import { Delivery } from './delivery';
 
-
 @Entity()
 export class Product {
     @PrimaryGeneratedColumn('uuid')
@@ -32,7 +31,6 @@ export class Product {
 
     @Column({ type: 'int', default: 0 }) // New field for inventory quantity
     inventoryQuantity: number;
-
 
     @Column({
         type: 'enum',

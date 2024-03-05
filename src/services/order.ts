@@ -113,6 +113,9 @@ class OrderService {
             // serialNumber: orderData.serialNumber, // Add 'serialNumber' to your Order model if necessary
             orderValue: 0,
             quantity: 0,
+            totalCommission: 0,
+            actualMoney: 0,
+
             // client: orderData.client,
             client: orderData.customer
                 ? this.generateClientName(orderData.customer)
@@ -180,7 +183,6 @@ class OrderService {
                                 // Set the product status based on orderData
                                 product.productStatus = orderData.status;
 
-
                                 // Calculate orderValue based on product price and quantity
                                 newOrder.orderValue +=
                                     product.price * reducedQuantity;
@@ -198,6 +200,36 @@ class OrderService {
                                     cartItem.productId
                                 );
                             }
+
+
+
+
+                            // Calculate total commission and actual money .
+                            let totalCommission = 0;
+                            let actualMoney = 0;
+
+                            // Loop through the products in the order
+                            for (const productEntity of productEntities) {
+                                const product = productEntity as Product;
+
+                                // Calculate commission for each product.
+                                const productPriceWithoutCommission = product.price * 0.8; // Remove the 20%
+                                const commission = product.price * 0.2;
+
+                                // Add product commission to the total commission
+                                totalCommission += commission;
+
+                                // Subtract product commission from the order value
+                                actualMoney += productPriceWithoutCommission;
+                            }
+
+                            // Update the order's commission and actual money properties
+                            newOrder.totalCommission = totalCommission * cartItem.quantity;
+                            newOrder.actualMoney = actualMoney * cartItem.quantity;
+
+
+
+
                         } catch (error) {
                             console.error(
                                 'Error retrieving product:',
@@ -271,11 +303,9 @@ class OrderService {
         return updatedOrder;
     };
 
-
-
     /**
-        * Update product status within an order
-        */
+     * Update product status within an order
+     */
     public updateProductStatus = async (
         orderId: string,
         productId: string,

@@ -71,6 +71,13 @@ export class Order {
     @Column({ type: 'integer' })
     quantity: number;
 
+    @Column({ type: 'float', nullable: true })
+    totalCommission: number;
+
+    @Column({ type: 'float', nullable: true })
+    actualMoney: number;
+
+
     @Column()
     client: string;
 
@@ -98,7 +105,6 @@ export class Order {
     @ManyToMany(() => Product, (product) => product.orders)
     @JoinTable()
     products: Product[];
-
 
     @Column({
         type: 'enum',

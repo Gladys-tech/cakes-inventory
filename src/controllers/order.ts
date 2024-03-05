@@ -63,8 +63,6 @@ class OrderController {
                 message: 'Error creating order.',
             });
         }
-
-
     };
 
     // updating an order
@@ -96,12 +94,7 @@ class OrderController {
                 message: 'Error updating order.',
             });
         }
-
     };
-
-
-
-
 
     // Update product status within an order
     public updateProductStatus = async (req: Request, res: Response) => {

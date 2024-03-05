@@ -7,7 +7,7 @@ import {
 } from '../repositories';
 import { DeepPartial } from 'typeorm';
 import { PaymentMethod } from '../models/order';
-import {v4 as uuidv4} from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 
 class PaymentService {
     private readonly paymentRepository: typeof PaymentRepository;
@@ -61,8 +61,9 @@ class PaymentService {
             throw new Error(`Customer not found with id: ${customerId}`);
         }
 
+
         // Calculate the amountPaid based on orderValue
-        const amountPaid = order.orderValue;
+         const amountPaid = order.orderValue;
 
         const newPayment = this.paymentRepository.create({
             dateOfPayment: currentDate.toISOString().split('T')[0],
@@ -97,72 +98,7 @@ class PaymentService {
         return existingPayment;
     };
 
-    /**
-     * Process payment using Flutterwave
-     */
-    //  public processFlutterwavePayment = async (
-    //     orderId: string,
-    //     customerId: string
-    // ): Promise<string> => {
-    //     // Fetch order and customer details
-    //     const order = await OrderRepository.findOne({
-    //         where: { id: orderId },
-    //     });
-
-    //     if (!order) {
-    //         throw new Error(`Order not found with id: ${orderId}`);
-    //     }
-
-    //     const customer = await CustomerRepository.findOne({
-    //         where: { id: customerId },
-    //     });
-
-    //     if (!customer) {
-    //         throw new Error(`Customer not found with id: ${customerId}`);
-    //     }
-
-    //     // Calculate the amount to be paid
-    //     const amountToPay = order.orderValue;
-
-    //     // Construct the Flutterwave payment payload
-    //     const paymentPayload = {
-    //         tx_ref: 'unique_transaction_reference', // Generate a unique transaction reference
-    //         amount: amountToPay,
-    //         currency: 'NGN', // Adjust the currency as needed
-    //         payment_type: 'card',
-    //         redirect_url: 'your_redirect_url',
-    //         order_id: orderId,
-    //         customer: {
-    //             email: customer.email,
-    //             // phonenumber: customer.phone,
-    //             name: `${customer.firstName} ${customer.lastName}`,
-    //         },
-    //         customizations: {
-    //             title: 'Your Payment Title',
-    //             description: 'Your Payment Description',
-    //             logo: 'your_logo_url',
-    //         },
-    //     };
-
-    //     // Make a request to Flutterwave API
-    //     const flutterwaveResponse = await axios.post(
-    //         'https://api.flutterwave.com/v3/charges?type=card',
-    //         paymentPayload,
-    //         {
-    //             headers: {
-    //                 Authorization: 'Bearer your_flutterwave_secret_key',
-    //             },
-    //         }
-    //     );
-
-    //     // Handle the Flutterwave API response
-    //     // Note: You need to implement proper error handling and response processing here
-
-    //     // Return the Flutterwave payment URL
-    //     return flutterwaveResponse.data.data.link;
-    // };
-
-    //  Process payment using MTN Sandbox
+    
 
     public processMTNPayment = async (
         orderId: string,
