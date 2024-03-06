@@ -201,9 +201,6 @@ class OrderService {
                                 );
                             }
 
-
-
-
                             // Calculate total commission and actual money .
                             let totalCommission = 0;
                             let actualMoney = 0;
@@ -213,7 +210,8 @@ class OrderService {
                                 const product = productEntity as Product;
 
                                 // Calculate commission for each product.
-                                const productPriceWithoutCommission = product.price * 0.8; // Remove the 20%
+                                const productPriceWithoutCommission =
+                                    product.price * 0.8; // Remove the 20%
                                 const commission = product.price * 0.2;
 
                                 // Add product commission to the total commission
@@ -224,12 +222,10 @@ class OrderService {
                             }
 
                             // Update the order's commission and actual money properties
-                            newOrder.totalCommission = totalCommission * cartItem.quantity;
-                            newOrder.actualMoney = actualMoney * cartItem.quantity;
-
-
-
-
+                            newOrder.totalCommission =
+                                totalCommission * cartItem.quantity;
+                            newOrder.actualMoney =
+                                actualMoney * cartItem.quantity;
                         } catch (error) {
                             console.error(
                                 'Error retrieving product:',

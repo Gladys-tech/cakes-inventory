@@ -77,7 +77,6 @@ export class Order {
     @Column({ type: 'float', nullable: true })
     actualMoney: number;
 
-
     @Column()
     client: string;
 

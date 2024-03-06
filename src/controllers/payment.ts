@@ -56,8 +56,6 @@ class PaymentController {
         }
     };
 
-   
-    
     public processMTNPayment = async (req: Request, res: Response) => {
         const { orderId, customerId } = req.body;
 

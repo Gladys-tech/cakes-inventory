@@ -26,6 +26,12 @@ export class Payment {
     @Column({ type: 'float' })
     amountPaid: number;
 
+    @Column({ type: 'float', nullable: true })
+    totalCommission: number;
+
+    @Column({ type: 'float', nullable: true })
+    actualMoney: number;
+
     @Column({
         type: 'enum',
         enum: PaymentStatus,

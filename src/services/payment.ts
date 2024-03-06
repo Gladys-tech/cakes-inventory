@@ -52,6 +52,7 @@ class PaymentService {
             );
         }
 
+
         // Fetch the associated Customer from the CustomerRepository
         const customer = await CustomerRepository.findOne({
             where: { id: customerId },
@@ -61,9 +62,12 @@ class PaymentService {
             throw new Error(`Customer not found with id: ${customerId}`);
         }
 
-
         // Calculate the amountPaid based on orderValue
-         const amountPaid = order.orderValue;
+        const amountPaid = order.orderValue;
+
+        // Access totalCommission and actualMoney from the associated Order
+        const totalCommission = order.totalCommission;
+        const actualMoney = order.actualMoney;
 
         const newPayment = this.paymentRepository.create({
             dateOfPayment: currentDate.toISOString().split('T')[0],
@@ -71,6 +75,8 @@ class PaymentService {
             status: status,
             order: order,
             customer: customer,
+            totalCommission: totalCommission,
+            actualMoney: actualMoney,
         } as Payment);
 
         await this.paymentRepository.save(newPayment);
@@ -97,8 +103,6 @@ class PaymentService {
 
         return existingPayment;
     };
-
-    
 
     public processMTNPayment = async (
         orderId: string,
