@@ -25,7 +25,7 @@ const limiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     message: async (req: Request, res: Response) => {
-        const message = 'Too many requests, please try again later.';
+        const message = 'Too many requests, please try again later..';
         Logger.warn(message);
         res.status(429).json({
             status: 'WARNING',
