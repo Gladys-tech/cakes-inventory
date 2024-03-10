@@ -1,0 +1,20 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.DeliveryRepository = exports.PaymentRepository = exports.SupplierRepository = exports.OrderRepository = exports.CustomerRepository = exports.ProductRepository = exports.ShopRepository = exports.UserRepository = void 0;
+const user_1 = require("./user");
+Object.defineProperty(exports, "UserRepository", { enumerable: true, get: function () { return user_1.UserRepository; } });
+const shop_1 = require("./shop");
+Object.defineProperty(exports, "ShopRepository", { enumerable: true, get: function () { return shop_1.ShopRepository; } });
+const product_1 = require("./product");
+Object.defineProperty(exports, "ProductRepository", { enumerable: true, get: function () { return product_1.ProductRepository; } });
+const customer_1 = require("./customer");
+Object.defineProperty(exports, "CustomerRepository", { enumerable: true, get: function () { return customer_1.CustomerRepository; } });
+const order_1 = require("./order");
+Object.defineProperty(exports, "OrderRepository", { enumerable: true, get: function () { return order_1.OrderRepository; } });
+const supplier_1 = require("./supplier");
+Object.defineProperty(exports, "SupplierRepository", { enumerable: true, get: function () { return supplier_1.SupplierRepository; } });
+const payment_1 = require("./payment");
+Object.defineProperty(exports, "PaymentRepository", { enumerable: true, get: function () { return payment_1.PaymentRepository; } });
+const delivery_1 = require("./delivery");
+Object.defineProperty(exports, "DeliveryRepository", { enumerable: true, get: function () { return delivery_1.DeliveryRepository; } });
+//# sourceMappingURL=index.js.map
