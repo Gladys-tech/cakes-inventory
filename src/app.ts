@@ -60,7 +60,7 @@ app.get('/health', (req: Request, res: Response) => {
     Logger.debug('Health Check: OK.');
     res.status(200).json({
         status: 'OK',
-        message: 'Server is running.',
+        message: 'Server is running. 1',
     });
 });
 
