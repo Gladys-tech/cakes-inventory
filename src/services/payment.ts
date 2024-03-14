@@ -52,7 +52,6 @@ class PaymentService {
             );
         }
 
-
         // Fetch the associated Customer from the CustomerRepository
         const customer = await CustomerRepository.findOne({
             where: { id: customerId },
