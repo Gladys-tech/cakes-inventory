@@ -25,7 +25,7 @@ const limiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     message: async (req: Request, res: Response) => {
-        const message = 'Too many requests, please try again later.';
+        const message = 'Too many requests, please try again later...';
         Logger.warn(message);
         res.status(429).json({
             status: 'WARNING',
@@ -60,7 +60,7 @@ app.get('/health', (req: Request, res: Response) => {
     Logger.debug('Health Check: OK.');
     res.status(200).json({
         status: 'OK',
-        message: 'Server is running.',
+        message: 'Server is running. 1',
     });
 });
 
