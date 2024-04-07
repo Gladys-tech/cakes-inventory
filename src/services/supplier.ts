@@ -20,7 +20,9 @@ class SupplierService {
         req: Request,
         res: Response
     ): Promise<Supplier[]> => {
-        const suppliers = await this.supplierRepository.find();
+        const suppliers = await this.supplierRepository.find({
+            relations: [ 'product'],
+        });
         return suppliers;
     };
 

@@ -57,6 +57,9 @@ export class Product {
     @OneToMany(() => ProductImage, (image) => image.product, { cascade: true })
     images: ProductImage[];
 
+    @Column({nullable:true})
+    category: string;
+
     @ManyToMany(() => Shop, (shop) => shop.products)
     @JoinTable()
     shops: Shop[];

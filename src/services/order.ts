@@ -30,12 +30,29 @@ class OrderService {
     /**
      * Retrieve all orders
      */
+    // public getAllOrders = async (
+    //     req: Request,
+    //     res: Response
+    // ): Promise<Order[]> => {
+    //     const orders = await this.orderRepository.find();
+    //     return orders;
+    // };
     public getAllOrders = async (
         req: Request,
         res: Response
     ): Promise<Order[]> => {
-        const orders = await this.orderRepository.find();
-        return orders;
+        try {
+            // Retrieve all orders with related data including products
+            const orders = await this.orderRepository.find({
+                relations: ['customer', 'products'],
+            });
+    
+            // Return the orders with products
+            return orders;
+        } catch (error) {
+            console.error('Error retrieving orders:', error.message);
+            return []; // Return an empty array in case of an error
+        }
     };
 
     /**

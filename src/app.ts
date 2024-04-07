@@ -37,7 +37,13 @@ const limiter = rateLimit({
 app.use(express.json());
 
 // CORS
-app.use(cors());
+// app.use(cors());
+
+// Enable CORS with specific origin
+app.use(cors({
+    origin: 'http://localhost:3000', // Allow requests from frontend running on port 3000
+    credentials: true, // Include cookies in CORS requests if needed
+  }));
 
 // Helmet
 app.use(helmet());

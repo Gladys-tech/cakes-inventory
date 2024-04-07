@@ -125,6 +125,7 @@ class ProductService {
             description: productData.description,
             price: productData.price,
             inventoryQuantity: productData.inventoryQuantity,
+            category: productData.category,
         });
 
         if (productData.shops && productData.shops.length > 0) {

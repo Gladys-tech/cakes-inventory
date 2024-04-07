@@ -106,47 +106,96 @@ class UserService {
      * Get user by email and password
      */
 
+    // public getUserByEmailAndPassword = async (
+    //     email: string,
+    //     password: string
+    // ): Promise<
+    // // User | null
+    // { token: string | null; user: User | null }
+    // > => {
+    //     try {
+    //         const user = await this.userRepository.findOne({
+    //             where: {
+    //                 email: email,
+    //             },
+    //         });
+
+    //         if (user) {
+    //             console.log('Retrieved user:', user);
+
+    //             if (user.password === null || user.password === undefined) {
+    //                 console.error('User password is missing or null.');
+    //                 return null;
+    //             }
+
+    //             const isPasswordValid = await comparePasswords(
+    //                 password,
+    //                 user.password
+    //             );
+
+    //             if (isPasswordValid) {
+    //                 console.log('compared passwords for user:', user);
+    //                 const token = generateJwtToken(user);
+    //                 return { token: token, user: user };
+    //                 // return user;
+    //             } else {
+    //                 console.error('Invalid password.');
+    //                 return null;
+    //             }
+    //         } else {
+    //             console.error('User not found with the provided email.');
+    //             return null;
+    //         }
+    //     } catch (error) {
+    //         console.error('Error during getUserByEmailAndPassword:', error);
+    //         return null;
+    //     }
+    // };
+
+
+
     public getUserByEmailAndPassword = async (
         email: string,
         password: string
-    ): Promise<User | null> => {
+    ): Promise<{ user: User | null; token: string }> => {
         try {
             const user = await this.userRepository.findOne({
                 where: {
                     email: email,
                 },
             });
-
+    
             if (user) {
                 console.log('Retrieved user:', user);
-
+    
                 if (user.password === null || user.password === undefined) {
                     console.error('User password is missing or null.');
-                    return null;
+                    return { user: null, token: '' };
                 }
-
+    
                 const isPasswordValid = await comparePasswords(
                     password,
                     user.password
                 );
-
+    
                 if (isPasswordValid) {
                     console.log('compared passwords for user:', user);
-                    return user;
+                    const token = generateJwtToken(user);
+                    return { user: user, token: token };
                 } else {
                     console.error('Invalid password.');
-                    return null;
+                    return { user: null, token: '' };
                 }
             } else {
                 console.error('User not found with the provided email.');
-                return null;
+                return { user: null, token: '' };
             }
         } catch (error) {
             console.error('Error during getUserByEmailAndPassword:', error);
-            return null;
+            return { user: null, token: '' };
         }
     };
-
+    
     /**
      * Update user activation token
      */
