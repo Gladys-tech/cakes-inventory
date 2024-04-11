@@ -11,6 +11,7 @@ import {
 import { Product } from './product';
 import { Address } from './address';
 import { User } from './user';
+import { Order } from './order';
 
 export enum ShopType {
     ONLINE = 'online',
@@ -51,6 +52,9 @@ export class Shop {
         cascade: ['remove'],
     })
     products: Product[];
+
+    @ManyToMany(() => Order, (order) => order.shops)
+    orders: Order[]; // Establishing direct relationship with orders
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;

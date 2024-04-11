@@ -21,7 +21,7 @@ class SupplierService {
         res: Response
     ): Promise<Supplier[]> => {
         const suppliers = await this.supplierRepository.find({
-            relations: [ 'product'],
+            relations: ['product'],
         });
         return suppliers;
     };

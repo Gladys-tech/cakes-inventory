@@ -225,16 +225,16 @@ class UserController {
                 email,
                 password
             );
-    
+
             if (!authResult.user) {
                 return res.status(401).json({
                     status: 'UNAUTHORIZED',
                     message: 'Invalid email or password.',
                 });
             }
-    
+
             const { user, token } = authResult;
-    
+
             res.status(200).json({
                 status: 'OK',
                 message: 'Login successful',
@@ -250,7 +250,6 @@ class UserController {
             });
         }
     };
-    
 
     // activate account after signup
     public activateAccount = async (

@@ -39,6 +39,7 @@ class PaymentService {
         // Fetch the associated Order from the OrderRepository
         const order = await OrderRepository.findOne({
             where: { id: orderId },
+            relations: ['products', 'products.shops'],
         });
 
         if (!order) {
@@ -51,7 +52,6 @@ class PaymentService {
                 `Payment can only be created for "cash on delivery" orders.`
             );
         }
-
 
         // Fetch the associated Customer from the CustomerRepository
         const customer = await CustomerRepository.findOne({

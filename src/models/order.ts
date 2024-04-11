@@ -13,6 +13,7 @@ import { Customer } from './customer';
 import { Product } from './product';
 import { Payment } from './payment';
 import { Delivery } from './delivery';
+import { Shop } from './shop';
 
 export enum PaymentMethod {
     AirtelMoney = 'airtel_money',
@@ -104,6 +105,11 @@ export class Order {
     @ManyToMany(() => Product, (product) => product.orders)
     @JoinTable()
     products: Product[];
+
+    @ManyToMany(() => Shop, (shop) => shop.orders)
+    @JoinTable()
+    shops: Shop[]; 
+
 
     @Column({
         type: 'enum',

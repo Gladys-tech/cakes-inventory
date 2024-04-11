@@ -1,7 +1,7 @@
 import { Application } from 'express';
 import { CommonRoutesConfig } from '../../common/routes.config';
 import { ShopController } from '../../controllers';
-// import { authenticateToken } from '../../middleware/authMiddleware';
+ import { authenticateToken } from '../../middleware/authMiddleware';
 
 export default class ShopRoutes extends CommonRoutesConfig {
     constructor(app: Application) {
@@ -10,7 +10,7 @@ export default class ShopRoutes extends CommonRoutesConfig {
 
     configureRoutes() {
         // Apply authenticateToken middleware to protect these routes
-        // this.app.use('/shops', authenticateToken);
+         this.app.use('/shops', authenticateToken);
 
         // Read
         this.app.route('/shops').get(ShopController.getShops);

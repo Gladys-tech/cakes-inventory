@@ -21,7 +21,7 @@ export const dataSource = new DataSource({
     ],
     migrations: ['src/migrations/**/*{.ts,.js}'],
     subscribers: [],
-      extra: {
+    extra: {
         ssl: {
             ca: process.env.CRT,
         },

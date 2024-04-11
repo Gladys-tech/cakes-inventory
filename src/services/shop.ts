@@ -1,14 +1,16 @@
 import { Request, Response } from 'express';
 import { Shop } from '../models/shop';
 import { Product } from '../models/product';
-import { ShopRepository } from '../repositories';
+import { ShopRepository, UserRepository } from '../repositories';
 import { Address } from '../models/address';
 
 class ShopService {
     private readonly shopRepository: typeof ShopRepository;
+    private readonly userRepository: typeof UserRepository; // Add UserRepository
 
     constructor() {
         this.shopRepository = ShopRepository;
+        this.userRepository = UserRepository; // Initialize UserRepository
     }
 
     /**
@@ -25,13 +27,6 @@ class ShopService {
     /**
      * Retrieve a shop by ID
      */
-    // public getShopById = async (shopId: string): Promise<Shop | null> => {
-    //     const shop = await this.shopRepository.findOne({
-    //         where: { id: shopId },
-    //         relations: ['address', 'products'], // Specify related entities to load
-    //     });
-    //     return shop || null;
-    // };
 
     public getShopById = async (shopId: string): Promise<Shop | null> => {
         try {
@@ -49,14 +44,25 @@ class ShopService {
     /**
      * Create a new shop
      */
-    public createShop = async (shopData: any): Promise<Shop> => {
+    public createShop = async (shopData: any, userId: string): Promise<Shop> => {
+        try {
+            // Fetch user details based on userId
+            const user = await this.userRepository.findOne({where:{id:userId}});
+
+            if (!user) {
+                throw new Error('User not found');
+            }
+
+            // Combine first and last names to form ownerName
+            const ownerName = `${user.firstName} ${user.lastName}`;
         // Create a new shop instance with basic data
         const newShop = this.shopRepository.create({
             name: shopData.name,
             description: shopData.description,
-            email: shopData.email,
-            ownerName: shopData.ownerName,
+            email:  user.email,
+            ownerName: ownerName,
             type: shopData.type,
+            users: [user],
         });
 
         // If 'address' is provided in shopData, find or create the address entity
@@ -112,6 +118,11 @@ class ShopService {
         await this.shopRepository.save(newShop);
 
         return newShop;
+
+    } catch (error) {
+        console.error('Error creating shop:', error.message);
+        throw error;
+    }
     };
 
     /**

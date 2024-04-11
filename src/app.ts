@@ -40,10 +40,12 @@ app.use(express.json());
 // app.use(cors());
 
 // Enable CORS with specific origin
-app.use(cors({
-    origin: 'http://localhost:3000', // Allow requests from frontend running on port 3000
-    credentials: true, // Include cookies in CORS requests if needed
-  }));
+app.use(
+    cors({
+        origin: 'http://localhost:3000', // Allow requests from frontend running on port 3000
+        credentials: true, // Include cookies in CORS requests if needed
+    })
+);
 
 // Helmet
 app.use(helmet());

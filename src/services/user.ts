@@ -152,8 +152,6 @@ class UserService {
     //     }
     // };
 
-
-
     public getUserByEmailAndPassword = async (
         email: string,
         password: string
@@ -164,20 +162,20 @@ class UserService {
                     email: email,
                 },
             });
-    
+
             if (user) {
                 console.log('Retrieved user:', user);
-    
+
                 if (user.password === null || user.password === undefined) {
                     console.error('User password is missing or null.');
                     return { user: null, token: '' };
                 }
-    
+
                 const isPasswordValid = await comparePasswords(
                     password,
                     user.password
                 );
-    
+
                 if (isPasswordValid) {
                     console.log('compared passwords for user:', user);
                     const token = generateJwtToken(user);
@@ -195,7 +193,7 @@ class UserService {
             return { user: null, token: '' };
         }
     };
-    
+
     /**
      * Update user activation token
      */

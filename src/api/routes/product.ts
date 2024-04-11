@@ -11,7 +11,7 @@ export default class ProductRoutes extends CommonRoutesConfig {
 
     configureRoutes() {
         // Apply authenticateToken middleware to protect these routes
-        // this.app.use('/products', authenticateToken);
+         this.app.use('/products', authenticateToken);
 
         // Read
         this.app.route('/products').get(ProductController.getProducts);
