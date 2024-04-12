@@ -9,7 +9,6 @@ const {
     JWT_REFRESH_TOKEN_EXPIRATION,
 } = process.env;
 
-
 export const generateJwtToken = (user: User): string => {
     const token = jwt.sign({ userId: user.id }, JWT_TOKEN_SECRET, {
         expiresIn: JWT_TOKEN_EXPIRATION,
@@ -58,5 +57,3 @@ export const verifyResetToken = (token: string): any => {
         throw error;
     }
 };
-
-

@@ -16,7 +16,6 @@ export default class ShopRoutes extends CommonRoutesConfig {
         this.app.route('/shops').get(ShopController.getShops);
         this.app.route('/shops/:id').get(ShopController.getShopById);
 
-      
         // Create
         this.app.route('/shops').post(ShopController.createShop);
 

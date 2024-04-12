@@ -65,4 +65,7 @@ export class Shop {
         onUpdate: 'CURRENT_TIMESTAMP',
     })
     updatedAt: Date;
+
+    @Column({nullable:true})
+    userId:string | null;
 }

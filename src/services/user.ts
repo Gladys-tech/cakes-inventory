@@ -36,7 +36,7 @@ class UserService {
     /**
      * Create a new user
      */
-   
+
     public createUser = async (userData: any): Promise<User> => {
         const hashedPassword = await hashPassword(userData.password);
         const newUser = this.userRepository.create({

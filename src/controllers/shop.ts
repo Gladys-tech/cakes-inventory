@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { ShopService } from '../services';
 
-
 class ShopController {
     // getting all shops
     public getShops = async (req: Request, res: Response) => {
@@ -17,8 +16,6 @@ class ShopController {
             shops,
         });
     };
-
-    
 
     // getting shop by id
     public getShopById = async (req: Request, res: Response) => {
@@ -48,7 +45,7 @@ class ShopController {
     };
 
     // creating a shop
-    public createShop = async (req: Request,  res: Response) => {
+    public createShop = async (req: Request, res: Response) => {
         const shopData = req.body;
         const userId = req.user.id;
 
