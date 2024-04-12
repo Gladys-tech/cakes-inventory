@@ -18,6 +18,8 @@ class ShopController {
         });
     };
 
+    
+
     // getting shop by id
     public getShopById = async (req: Request, res: Response) => {
         const shopId = req.params.id;
@@ -46,7 +48,7 @@ class ShopController {
     };
 
     // creating a shop
-    public createShop = async (req: Request, res: Response) => {
+    public createShop = async (req: Request,  res: Response) => {
         const shopData = req.body;
         const userId = req.user.id;
 

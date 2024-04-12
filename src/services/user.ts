@@ -28,6 +28,7 @@ class UserService {
     public getUserById = async (userId: string): Promise<User | null> => {
         const user = await this.userRepository.findOne({
             where: { id: userId },
+            relations: ['shops'],
         });
         return user || null;
     };
@@ -35,11 +36,7 @@ class UserService {
     /**
      * Create a new user
      */
-    // public createUser = async (userData: any): Promise<User> => {
-    //     const newUser = this.userRepository.create(userData);
-    //     await this.userRepository.save(newUser);
-    //     return newUser;
-    // };
+   
     public createUser = async (userData: any): Promise<User> => {
         const hashedPassword = await hashPassword(userData.password);
         const newUser = this.userRepository.create({

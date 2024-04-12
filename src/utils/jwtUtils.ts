@@ -1,5 +1,6 @@
 import jwt, { TokenExpiredError } from 'jsonwebtoken';
 import { User } from '../models/user';
+import { NextFunction } from 'express';
 
 const {
     JWT_TOKEN_SECRET,
@@ -7,6 +8,7 @@ const {
     REFRESH_TOKEN_SECRET,
     JWT_REFRESH_TOKEN_EXPIRATION,
 } = process.env;
+
 
 export const generateJwtToken = (user: User): string => {
     const token = jwt.sign({ userId: user.id }, JWT_TOKEN_SECRET, {
@@ -56,6 +58,5 @@ export const verifyResetToken = (token: string): any => {
         throw error;
     }
 };
-
 
 

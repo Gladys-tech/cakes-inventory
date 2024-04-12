@@ -1,7 +1,7 @@
 import { Application } from 'express';
 import { CommonRoutesConfig } from '../../common/routes.config';
 import { CustomerController } from '../../controllers';
- import { authenticateToken } from '../../middleware/authMiddleware';
+import { authenticateToken } from '../../middleware/authMiddleware';
 
 export default class CustomerRoutes extends CommonRoutesConfig {
     constructor(app: Application) {
@@ -10,7 +10,7 @@ export default class CustomerRoutes extends CommonRoutesConfig {
 
     configureRoutes() {
         // Apply authenticateToken middleware to protect these routes
-         this.app.use('/customers', authenticateToken);
+        this.app.use('/customers', authenticateToken);
 
         // Read
         this.app.route('/customers').get(CustomerController.getCustomers);

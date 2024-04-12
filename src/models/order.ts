@@ -108,8 +108,7 @@ export class Order {
 
     @ManyToMany(() => Shop, (shop) => shop.orders)
     @JoinTable()
-    shops: Shop[]; 
-
+    shops: Shop[];
 
     @Column({
         type: 'enum',

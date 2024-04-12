@@ -11,7 +11,7 @@ export default class SupplierRoutes extends CommonRoutesConfig {
 
     configureRoutes() {
         // Apply authenticateToken middleware to protect these routes
-         this.app.use('/suppliers', authenticateToken);
+        this.app.use('/suppliers', authenticateToken);
 
         // Read
         this.app.route('/suppliers').get(SupplierController.getSuppliers);

@@ -12,7 +12,6 @@ export default class PaymentRoutes extends CommonRoutesConfig {
         // Apply authenticateToken middleware to protect these routes
         this.app.use('/payments', authenticateToken);
 
-
         this.app.route('/payments').post(PaymentController.createPayment);
         // this.app
         //     .route('/payments/flutterwave')

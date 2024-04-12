@@ -1,7 +1,7 @@
 import { Application } from 'express';
 import { CommonRoutesConfig } from '../../common/routes.config';
 import { DeliveryController } from '../../controllers';
- import { authenticateToken } from '../../middleware/authMiddleware';
+import { authenticateToken } from '../../middleware/authMiddleware';
 
 export default class DeliveryRoutes extends CommonRoutesConfig {
     constructor(app: Application) {
@@ -10,7 +10,7 @@ export default class DeliveryRoutes extends CommonRoutesConfig {
 
     configureRoutes() {
         // Apply authenticateToken middleware to protect these routes
-         this.app.use('/deliveries', authenticateToken);
+        this.app.use('/deliveries', authenticateToken);
 
         this.app.route('/deliveries').post(DeliveryController.createDelivery);
         this.app

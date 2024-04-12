@@ -181,13 +181,11 @@ class OrderService {
                                 });
 
                             if (product) {
-
                                 // Retrieve the shops from the database using the unique shop IDs
                                 const shops = product.shops;
 
                                 // Add the retrieved shops to the order
                                 newOrder.shops = shops;
-
 
                                 // Check if the product is in the customer's cart
 
@@ -220,7 +218,6 @@ class OrderService {
 
                                 // Save the updated product to the database
                                 await this.productRepository.save(product);
-
 
                                 productEntities.push(product);
                             } else {
