@@ -2,7 +2,7 @@ import { Application } from 'express';
 import { body } from 'express-validator';
 import { CommonRoutesConfig } from '../../common/routes.config';
 import { SupplierController } from '../../controllers';
-// import { authenticateToken } from '../../middleware/authMiddleware';
+import { authenticateToken } from '../../middleware/authMiddleware';
 
 export default class SupplierRoutes extends CommonRoutesConfig {
     constructor(app: Application) {
@@ -11,7 +11,7 @@ export default class SupplierRoutes extends CommonRoutesConfig {
 
     configureRoutes() {
         // Apply authenticateToken middleware to protect these routes
-        // this.app.use('/products', authenticateToken);
+        this.app.use('/suppliers', authenticateToken);
 
         // Read
         this.app.route('/suppliers').get(SupplierController.getSuppliers);

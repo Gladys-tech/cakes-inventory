@@ -39,6 +39,7 @@ class PaymentService {
         // Fetch the associated Order from the OrderRepository
         const order = await OrderRepository.findOne({
             where: { id: orderId },
+            relations: ['products', 'products.shops'],
         });
 
         if (!order) {

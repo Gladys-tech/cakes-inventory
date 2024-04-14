@@ -25,7 +25,7 @@ const limiter = rateLimit({
     standardHeaders: true,
     legacyHeaders: false,
     message: async (req: Request, res: Response) => {
-        const message = 'Too many requests, please try again later.';
+        const message = 'Too many requests, please try again later...';
         Logger.warn(message);
         res.status(429).json({
             status: 'WARNING',
@@ -37,7 +37,15 @@ const limiter = rateLimit({
 app.use(express.json());
 
 // CORS
-app.use(cors());
+// app.use(cors());
+
+// Enable CORS with specific origin
+app.use(
+    cors({
+        origin: 'http://localhost:3000', // Allow requests from frontend running on port 3000
+        credentials: true, // Include cookies in CORS requests if needed
+    })
+);
 
 // Helmet
 app.use(helmet());
@@ -60,7 +68,7 @@ app.get('/health', (req: Request, res: Response) => {
     Logger.debug('Health Check: OK.');
     res.status(200).json({
         status: 'OK',
-        message: 'Server is running.',
+        message: 'Server is running. 1',
     });
 });
 

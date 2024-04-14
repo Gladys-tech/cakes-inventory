@@ -1,5 +1,6 @@
 import jwt, { TokenExpiredError } from 'jsonwebtoken';
 import { User } from '../models/user';
+import { NextFunction } from 'express';
 
 const {
     JWT_TOKEN_SECRET,

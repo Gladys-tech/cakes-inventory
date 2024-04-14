@@ -31,5 +31,5 @@ dataSource
         });
     })
     .catch((error) => {
-        Logger.error('Error during Data Source initialization', error);
+        Logger.error('Error during Data Source initialization process', error);
     });

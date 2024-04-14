@@ -10,6 +10,7 @@ import {
     CustomerRepository,
     OrderRepository,
     ProductRepository,
+    ShopRepository,
 } from '../repositories';
 import { Product } from '../models/product';
 import { Customer } from '../models/customer';
@@ -20,22 +21,41 @@ class OrderService {
     private readonly orderRepository: typeof OrderRepository;
     private readonly productRepository: typeof ProductRepository;
     private readonly customerRepository: typeof CustomerRepository;
+    private readonly shopRepository: typeof ShopRepository;
 
     constructor() {
         this.orderRepository = OrderRepository;
         this.productRepository = ProductRepository;
         this.customerRepository = CustomerRepository;
+        this.shopRepository = ShopRepository;
     }
 
     /**
      * Retrieve all orders
      */
+    // public getAllOrders = async (
+    //     req: Request,
+    //     res: Response
+    // ): Promise<Order[]> => {
+    //     const orders = await this.orderRepository.find();
+    //     return orders;
+    // };
     public getAllOrders = async (
         req: Request,
         res: Response
     ): Promise<Order[]> => {
-        const orders = await this.orderRepository.find();
-        return orders;
+        try {
+            // Retrieve all orders with related data including products
+            const orders = await this.orderRepository.find({
+                relations: ['customer', 'products'],
+            });
+
+            // Return the orders with products
+            return orders;
+        } catch (error) {
+            console.error('Error retrieving orders:', error.message);
+            return []; // Return an empty array in case of an error
+        }
     };
 
     /**
@@ -161,6 +181,12 @@ class OrderService {
                                 });
 
                             if (product) {
+                                // Retrieve the shops from the database using the unique shop IDs
+                                const shops = product.shops;
+
+                                // Add the retrieved shops to the order
+                                newOrder.shops = shops;
+
                                 // Check if the product is in the customer's cart
 
                                 // Reduce inventoryQuantity by the quantity in the customer's cart
@@ -258,7 +284,7 @@ class OrderService {
         // Reload the order with products to ensure the correct association is reflected in the response
         const savedOrder = await this.orderRepository.findOneOrFail({
             where: { id: newOrder.id },
-            relations: ['customer', 'products'],
+            relations: ['customer', 'products', 'products.shops'],
         });
 
         // Empty the customer's cart after the order is made

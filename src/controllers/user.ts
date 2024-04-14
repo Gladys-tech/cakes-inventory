@@ -180,30 +180,66 @@ class UserController {
     };
 
     // user login
+    // public login = async (
+    //     req: Request,
+    //     res: Response
+    // ): Promise<void | Response<any, Record<string, any>>> => {
+    //     try {
+    //         const { email, password } = req.body;
+    //         const authUser = await UserService.getUserByEmailAndPassword(
+    //             email,
+    //             password
+    //         );
+
+    //         if (!authUser) {
+    //             return res.status(401).json({
+    //                 status: 'UNAUTHORIZED',
+    //                 message: 'Invalid email or password.',
+    //             });
+    //         }
+
+    //         const token = generateJwtToken(authUser);
+
+    //         res.status(200).json({
+    //             status: 'OK',
+    //             message: 'Login successful',
+    //             token,
+    //         });
+    //         await sendWelcomeEmail(email);
+    //     } catch (error) {
+    //         console.error('Error during login:', error);
+    //         res.status(500).json({
+    //             status: 'INTERNAL_SERVER_ERROR',
+    //             message: 'Error during login.',
+    //         });
+    //     }
+    // };
+
     public login = async (
         req: Request,
         res: Response
     ): Promise<void | Response<any, Record<string, any>>> => {
         try {
             const { email, password } = req.body;
-            const authUser = await UserService.getUserByEmailAndPassword(
+            const authResult = await UserService.getUserByEmailAndPassword(
                 email,
                 password
             );
 
-            if (!authUser) {
+            if (!authResult.user) {
                 return res.status(401).json({
                     status: 'UNAUTHORIZED',
                     message: 'Invalid email or password.',
                 });
             }
 
-            const token = generateJwtToken(authUser);
+            const { user, token } = authResult;
 
             res.status(200).json({
                 status: 'OK',
                 message: 'Login successful',
                 token,
+                user,
             });
             await sendWelcomeEmail(email);
         } catch (error) {

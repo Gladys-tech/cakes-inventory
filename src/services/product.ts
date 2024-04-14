@@ -34,7 +34,7 @@ class ProductService {
     ): Promise<Product | null> => {
         const product = await this.productRepository.findOne({
             where: { id: productId },
-            relations: ['images'], // Include the images relation
+            relations: ['shops', 'images'], // Include the 'shops' relation
         });
         return product || null;
     };
@@ -125,6 +125,8 @@ class ProductService {
             description: productData.description,
             price: productData.price,
             inventoryQuantity: productData.inventoryQuantity,
+            category: productData.category,
+            shops: productData.shops, // Assign shops directly to the product
         });
 
         if (productData.shops && productData.shops.length > 0) {
