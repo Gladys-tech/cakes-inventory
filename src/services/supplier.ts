@@ -21,7 +21,7 @@ class SupplierService {
         res: Response
     ): Promise<Supplier[]> => {
         const suppliers = await this.supplierRepository.find({
-            relations: ['product'],
+            relations: ['products'],
         });
         return suppliers;
     };
@@ -35,7 +35,7 @@ class SupplierService {
         try {
             const supplier = await this.supplierRepository.findOneOrFail({
                 where: { id: supplierId },
-                relations: ['product'],
+                relations: ['products'],
             });
             return supplier;
         } catch (error) {
@@ -68,7 +68,8 @@ class SupplierService {
                 contactEmail: supplierData.contactEmail,
                 suppliedQuantity: supplierData.suppliedQuantity,
                 returnedQuantity: 0, // Set returnedQuantity to 0 by default
-                product,
+                // product,
+                products: [product],
             });
 
             const savedSupplier = await this.supplierRepository.save(

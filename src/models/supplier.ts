@@ -4,6 +4,7 @@ import {
     PrimaryGeneratedColumn,
     ManyToOne,
     JoinColumn,
+    OneToMany,
 } from 'typeorm';
 import { Product } from './product'; // Import the Product entity
 
@@ -28,11 +29,11 @@ export class Supplier {
     returnedQuantity: number;
 
     // Define many-to-one relationship with Product
-    @ManyToOne(() => Product, (product) => product.supplier, {
+    @OneToMany(() => Product, (product) => product.supplier, {
         onDelete: 'CASCADE', // Cascade delete when a product is deleted
     })
     @JoinColumn()
-    product: Product;
+    products: Product[];
 
     @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
     createdAt: Date;

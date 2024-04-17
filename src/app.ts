@@ -22,6 +22,8 @@ const routes: Array<CommonRoutesConfig> = [];
 const limiter = rateLimit({
     // windowMs: parseInt(process.env.RATE_LIMIT_WINDOW), // Max 15 minutes
     // max: parseInt(process.env.RATE_LIMIT), // limit each IP to 15 requests per windowMs
+    windowMs: 15 * 60 * 1000, // 15 minutes in milliseconds
+    max: 900, // 900 requests per 15 minutes
     standardHeaders: true,
     legacyHeaders: false,
     message: async (req: Request, res: Response) => {

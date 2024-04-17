@@ -16,6 +16,8 @@ export default class OrderRoutes extends CommonRoutesConfig {
         this.app.route('/orders').get(OrderController.getOrders);
         this.app.route('/orders/:id').get(OrderController.getOrderById);
 
+        this.app.route('/shops/:shopId/orders').get(OrderController.getOrdersByShopId);
+
         // Create
         this.app.route('/orders').post(OrderController.createOrder);
 

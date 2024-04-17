@@ -2,6 +2,7 @@ interface OrderCreationResponse {
     order?: Order;
     message?: string;
     status: 'Success' | 'EmptyCartError' | 'OtherError'; // Add more statuses as needed
+    shops?: Shop[];
 }
 
 import { Request, Response } from 'express';
@@ -16,6 +17,7 @@ import { Product } from '../models/product';
 import { Customer } from '../models/customer';
 import { DeepPartial } from 'typeorm';
 import { PaymentMethod } from '../models/order';
+import { Shop } from '../models/shop';
 
 class OrderService {
     private readonly orderRepository: typeof OrderRepository;
@@ -33,13 +35,7 @@ class OrderService {
     /**
      * Retrieve all orders
      */
-    // public getAllOrders = async (
-    //     req: Request,
-    //     res: Response
-    // ): Promise<Order[]> => {
-    //     const orders = await this.orderRepository.find();
-    //     return orders;
-    // };
+
     public getAllOrders = async (
         req: Request,
         res: Response
@@ -47,7 +43,7 @@ class OrderService {
         try {
             // Retrieve all orders with related data including products
             const orders = await this.orderRepository.find({
-                relations: ['customer', 'products'],
+                relations: ['customer', 'products', 'shops'],
             });
 
             // Return the orders with products
@@ -65,7 +61,7 @@ class OrderService {
         try {
             const order = await this.orderRepository.findOneOrFail({
                 where: { id: orderId },
-                relations: ['customer', 'products'],
+                relations: ['customer', 'products', 'shops'],
             });
 
             // Fetch detailed product information for each item in the cart
@@ -96,6 +92,25 @@ class OrderService {
             return null;
         }
     };
+
+    // get orders by shop id.
+    public getOrdersByShopId = async (shopId: string): Promise<Order[]> => {
+        try {
+            // Retrieve orders with their associated shops filtered by the provided shop ID
+            const orders = await this.orderRepository.createQueryBuilder("order")
+                .leftJoinAndSelect("order.shops", "shop")
+                .where("shop.id = :shopId", { shopId })
+                .getMany();
+    
+            return orders;
+        } catch (error) {
+            console.error('Error retrieving orders by shop ID:', error.message);
+            return []; // Return an empty array in case of an error
+        }
+    };
+    
+
+
 
     /**
      * Generate client name based on customer's first and last names
@@ -281,11 +296,21 @@ class OrderService {
         // Save the new order with its relationships
         await this.orderRepository.save(newOrder);
 
+
         // Reload the order with products to ensure the correct association is reflected in the response
         const savedOrder = await this.orderRepository.findOneOrFail({
             where: { id: newOrder.id },
-            relations: ['customer', 'products', 'products.shops'],
+            relations: ['customer', 'products', 'products.shops',],
         });
+
+        // Extract the shops array from the saved order's products
+        const shopsArray = savedOrder.products.reduce((acc: Shop[], product: Product) => {
+            return acc.concat(product.shops);
+        }, []);
+
+        // Remove duplicate shops, if any
+        const uniqueShops = Array.from(new Set(shopsArray));
+
 
         // Empty the customer's cart after the order is made
         // if (savedOrder.status === 'order made' && savedOrder.customer) {
@@ -295,9 +320,12 @@ class OrderService {
 
         // return savedOrder;
         // return newOrder;
+
+
         return {
             status: 'Success',
             order: savedOrder,
+            shops: uniqueShops,
         };
     };
 

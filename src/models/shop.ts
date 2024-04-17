@@ -66,6 +66,6 @@ export class Shop {
     })
     updatedAt: Date;
 
-    @Column({nullable:true})
-    userId:string | null;
+    @Column({ nullable: true })
+    userId: string | null;
 }

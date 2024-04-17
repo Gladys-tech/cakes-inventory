@@ -45,6 +45,22 @@ class OrderController {
         }
     };
 
+    // Controller method for retrieving orders by shop ID
+    public getOrdersByShopId = async (req: Request, res: Response) => {
+        const { shopId } = req.params;
+
+        try {
+            const orders = await OrderService.getOrdersByShopId(shopId);
+            // Respond with the retrieved orders
+            res.json({ status: 'OK', orders });
+        } catch (error) {
+            console.error('Error retrieving orders by shop ID:', error.message);
+            // Handle the error and send an error response
+            res.status(500).json({ status: 'Error', message: 'Internal server error' });
+        }
+    };
+
+
     // creating an order
     public createOrder = async (req: Request, res: Response) => {
         const orderData = req.body;

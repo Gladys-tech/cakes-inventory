@@ -7,6 +7,7 @@ import cloudinary from '../utils/cloudinary';
 import sharp from 'sharp';
 import { writeFile, unlink } from 'fs/promises';
 import axios from 'axios';
+import { Supplier } from '../models/supplier';
 
 class ProductService {
     private readonly productRepository: typeof ProductRepository;
@@ -34,7 +35,7 @@ class ProductService {
     ): Promise<Product | null> => {
         const product = await this.productRepository.findOne({
             where: { id: productId },
-            relations: ['shops', 'images'], // Include the 'shops' relation
+            relations: ['shops', 'images', 'supplier','orders'], // Include the 'shops' relation
         });
         return product || null;
     };

@@ -46,7 +46,7 @@ export class Product {
     })
     productStatus: string;
 
-    @ManyToOne(() => Supplier, (supplier) => supplier.product, {
+    @ManyToOne(() => Supplier, (supplier) => supplier.products, {
         nullable: true, // Make the relationship optional
     })
     supplier: Supplier;
