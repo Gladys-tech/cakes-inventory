@@ -6,11 +6,11 @@ import { Address } from '../models/address';
 
 class ShopService {
     private readonly shopRepository: typeof ShopRepository;
-    private readonly userRepository: typeof UserRepository; 
+    private readonly userRepository: typeof UserRepository;
 
     constructor() {
         this.shopRepository = ShopRepository;
-        this.userRepository = UserRepository; 
+        this.userRepository = UserRepository;
     }
 
     /**
@@ -32,7 +32,12 @@ class ShopService {
         try {
             const shop = await this.shopRepository.findOneOrFail({
                 where: { id: shopId },
-                relations: ['address', 'products', 'products.supplier','orders'],
+                relations: [
+                    'address',
+                    'products',
+                    'products.supplier',
+                    'orders',
+                ],
             });
             return shop;
         } catch (error) {

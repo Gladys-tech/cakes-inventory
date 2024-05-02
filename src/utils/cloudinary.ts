@@ -7,3 +7,4 @@ cloudinary.config({
 });
 
 export default cloudinary;
+// upload preset name: 'tpkztcep'

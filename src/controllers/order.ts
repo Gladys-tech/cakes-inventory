@@ -56,10 +56,12 @@ class OrderController {
         } catch (error) {
             console.error('Error retrieving orders by shop ID:', error.message);
             // Handle the error and send an error response
-            res.status(500).json({ status: 'Error', message: 'Internal server error' });
+            res.status(500).json({
+                status: 'Error',
+                message: 'Internal server error',
+            });
         }
     };
-
 
     // creating an order
     public createOrder = async (req: Request, res: Response) => {

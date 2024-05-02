@@ -19,6 +19,7 @@ export default class ProductRoutes extends CommonRoutesConfig {
 
         // Create
         this.app.route('/products').post(ProductController.createProduct);
+        
 
         // Update
         this.app.route('/products/:id').put(ProductController.updateProduct);
