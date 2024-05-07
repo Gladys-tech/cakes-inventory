@@ -158,29 +158,103 @@ class ProductService {
         return newProduct;
     };
 
+
+
+
+    /**
+   * Remove product image by index
+   */
+    public async removeProductImage(
+        productId: string,
+        imageIndex: number
+    ): Promise<Product | null> {
+        const product = await this.productRepository.findOne({
+            where: { id: productId },
+            relations: ['images'],
+        });
+
+        if (!product || !product.images || !product.images[imageIndex]) {
+            return null; // Product not found or image index out of bounds
+        }
+
+        const imageToRemove = product.images[imageIndex];
+
+        try {
+            // Delete image from Cloudinary
+            await cloudinary.uploader.destroy(imageToRemove.imageUrl);
+
+            // Remove image from database
+            await this.productRepository.manager.remove(ProductImage, imageToRemove);
+
+            // Update product's images array
+            product.images.splice(imageIndex, 1);
+
+            // If primary image is removed, set new primary image
+            if (imageToRemove.imageUrl === product.primaryImageUrl) {
+                product.primaryImageUrl = product.images.length > 0 ? product.images[0].imageUrl : null;
+            }
+
+            await this.productRepository.save(product);
+            return product;
+        } catch (error) {
+            console.error('Error removing image:', error);
+            throw error;
+        }
+    }
     /**
      * Update a product by ID
      */
+    // public updateProduct = async (
+    //     productId: string,
+    //     productData: any
+    // ): Promise<Product | null> => {
+    //     const existingProduct = await this.productRepository.findOne({
+    //         where: { id: productId },
+    //     });
+
+    //     if (!existingProduct) {
+    //         return null; // product not found
+    //     }
+
+    //     const updatedProduct = this.productRepository.merge(
+    //         existingProduct,
+    //         productData
+    //     );
+    //     await this.productRepository.save(updatedProduct);
+
+    //     return updatedProduct;
+    // };
+
+
+
     public updateProduct = async (
         productId: string,
         productData: any
     ): Promise<Product | null> => {
         const existingProduct = await this.productRepository.findOne({
             where: { id: productId },
+            relations: ['images'], // Load existing images for updating
         });
 
         if (!existingProduct) {
-            return null; // product not found
+            return null; // Product not found
         }
 
-        const updatedProduct = this.productRepository.merge(
-            existingProduct,
-            productData
-        );
+        // Add new images if provided
+        if (productData.imageUrls && productData.imageUrls.length > 0) {
+            await this.addProductImages(existingProduct, productData.imageUrls.slice(0, 6));
+            
+        }
+
+        // Merge updated product data
+        const updatedProduct = this.productRepository.merge(existingProduct, productData);
+
+        // Save the updated product
         await this.productRepository.save(updatedProduct);
 
         return updatedProduct;
     };
+
 
     /**
      * Delete a product by ID

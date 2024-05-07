@@ -65,6 +65,28 @@ class ProductController {
         }
     };
 
+    
+
+
+    public removeProductImage = async (req: Request, res: Response): Promise<void> => {
+        try {
+            const productId = req.params.productId;
+            const imageIndex = parseInt(req.params.imageIndex);
+
+            const updatedProduct = await ProductService.removeProductImage(productId, imageIndex);
+
+            if (!updatedProduct) {
+                res.status(404).json({ message: 'Product not found or image index out of bounds' });
+                return;
+            }
+
+            res.status(200).json(updatedProduct);
+        } catch (error) {
+            console.error('Error removing product image:', error);
+            res.status(500).json({ message: 'Internal server error' });
+        }
+    };
+
     // updating a product
     public updateProduct = async (req: Request, res: Response) => {
         const productId = req.params.id;
