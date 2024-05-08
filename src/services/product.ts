@@ -158,12 +158,9 @@ class ProductService {
         return newProduct;
     };
 
-
-
-
     /**
-   * Remove product image by index
-   */
+     * Remove product image by index
+     */
     public async removeProductImage(
         productId: string,
         imageIndex: number
@@ -184,14 +181,20 @@ class ProductService {
             await cloudinary.uploader.destroy(imageToRemove.imageUrl);
 
             // Remove image from database
-            await this.productRepository.manager.remove(ProductImage, imageToRemove);
+            await this.productRepository.manager.remove(
+                ProductImage,
+                imageToRemove
+            );
 
             // Update product's images array
             product.images.splice(imageIndex, 1);
 
             // If primary image is removed, set new primary image
             if (imageToRemove.imageUrl === product.primaryImageUrl) {
-                product.primaryImageUrl = product.images.length > 0 ? product.images[0].imageUrl : null;
+                product.primaryImageUrl =
+                    product.images.length > 0
+                        ? product.images[0].imageUrl
+                        : null;
             }
 
             await this.productRepository.save(product);
@@ -226,7 +229,7 @@ class ProductService {
     // };
 
 
-
+    
     public updateProduct = async (
         productId: string,
         productData: any
@@ -235,26 +238,35 @@ class ProductService {
             where: { id: productId },
             relations: ['images'], // Load existing images for updating
         });
-
+    
         if (!existingProduct) {
             return null; // Product not found
         }
-
+    
         // Add new images if provided
-        if (productData.imageUrls && productData.imageUrls.length > 0) {
-            await this.addProductImages(existingProduct, productData.imageUrls.slice(0, 6));
-            
+        if (productData.images && productData.images.length > 0) {
+            try {
+                await this.addProductImages(existingProduct, productData.images);
+            } catch (error) {
+                console.error('Error adding new images:', error);
+                throw error;
+            }
         }
-
+    
         // Merge updated product data
-        const updatedProduct = this.productRepository.merge(existingProduct, productData);
-
+        const updatedProduct = this.productRepository.merge(
+            existingProduct,
+            productData
+        );
+    
         // Save the updated product
         await this.productRepository.save(updatedProduct);
-
+    
         return updatedProduct;
     };
-
+    
+    
+    
 
     /**
      * Delete a product by ID

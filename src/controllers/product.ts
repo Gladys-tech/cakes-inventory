@@ -65,18 +65,25 @@ class ProductController {
         }
     };
 
-    
 
-
-    public removeProductImage = async (req: Request, res: Response): Promise<void> => {
+// remove an image from the product
+    public removeProductImage = async (
+        req: Request,
+        res: Response
+    ): Promise<void> => {
         try {
             const productId = req.params.productId;
             const imageIndex = parseInt(req.params.imageIndex);
 
-            const updatedProduct = await ProductService.removeProductImage(productId, imageIndex);
+            const updatedProduct = await ProductService.removeProductImage(
+                productId,
+                imageIndex
+            );
 
             if (!updatedProduct) {
-                res.status(404).json({ message: 'Product not found or image index out of bounds' });
+                res.status(404).json({
+                    message: 'Product not found or image index out of bounds',
+                });
                 return;
             }
 
@@ -88,35 +95,23 @@ class ProductController {
     };
 
     // updating a product
-    public updateProduct = async (req: Request, res: Response) => {
-        const productId = req.params.id;
-        const productData = req.body;
+   public async updateProduct(req: Request, res: Response) {
+    const { productId } = req.params;
+    const productData = req.body; // Make sure the body contains imageUrls
 
-        try {
-            const updatedProduct = await ProductService.updateProduct(
-                productId,
-                productData
-            );
-
-            if (!updatedProduct) {
-                return res.status(404).json({
-                    status: 'NOT_FOUND',
-                    message: `product not found with id: ${productId}`,
-                });
-            }
-
-            res.status(200).json({
-                status: 'OK',
-                product: updatedProduct,
-            });
-        } catch (error) {
-            console.error('Error updating product:', error);
-            res.status(500).json({
-                status: 'INTERNAL_SERVER_ERROR',
-                message: 'Error updating product.',
-            });
+    try {
+        const updatedProduct = await ProductService.updateProduct(productId, productData);
+        if (updatedProduct) {
+            res.json(updatedProduct);
+        } else {
+            res.status(404).json({ message: "Product not found" });
         }
-    };
+    } catch (error) {
+        console.error("Error updating product:", error);
+        res.status(500).json({ message: "Error updating product" });
+    }
+}
+
 
     // delete a product
     public deleteProduct = async (req: Request, res: Response) => {

@@ -21,7 +21,9 @@ export default class ProductRoutes extends CommonRoutesConfig {
         this.app.route('/products').post(ProductController.createProduct);
 
         // Route to remove product image
-        this.app.route('/products/:productId/images/:imageIndex').delete(ProductController.removeProductImage);
+        this.app
+            .route('/products/:productId/images/:imageIndex')
+            .delete(ProductController.removeProductImage);
 
         // Update
         this.app.route('/products/:id').put(ProductController.updateProduct);
