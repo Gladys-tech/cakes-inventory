@@ -65,8 +65,7 @@ class ProductController {
         }
     };
 
-
-// remove an image from the product
+    // remove an image from the product
     public removeProductImage = async (
         req: Request,
         res: Response
@@ -95,23 +94,28 @@ class ProductController {
     };
 
     // updating a product
-   public async updateProduct(req: Request, res: Response) {
-    const { productId } = req.params;
-    const productData = req.body; // Make sure the body contains imageUrls
+    public async updateProduct(req: Request, res: Response) {
+        const productId = req.params.id; // Extract product ID from request parameters
+        console.log('Product ID from request parameters:', productId);
 
-    try {
-        const updatedProduct = await ProductService.updateProduct(productId, productData);
-        if (updatedProduct) {
-            res.json(updatedProduct);
-        } else {
-            res.status(404).json({ message: "Product not found" });
+        // Check if productId is undefined
+        if (!productId) {
+            return res.status(400).json({ message: 'Product ID is missing in request parameters' });
         }
-    } catch (error) {
-        console.error("Error updating product:", error);
-        res.status(500).json({ message: "Error updating product" });
-    }
-}
 
+        const productData = req.body; // Assuming product data is in the request body
+
+        try {
+            const updatedProduct = await ProductService.updateProduct(productId, productData);
+            if (!updatedProduct) {
+                return res.status(404).json({ message: 'Product not found' });
+            }
+            return res.json(updatedProduct);
+        } catch (error) {
+            console.error('Error updating product:', error);
+            return res.status(500).json({ message: 'Internal server error' });
+        }
+    }
 
     // delete a product
     public deleteProduct = async (req: Request, res: Response) => {

@@ -204,69 +204,132 @@ class ProductService {
             throw error;
         }
     }
-    /**
+      /**
      * Update a product by ID
      */
-    // public updateProduct = async (
-    //     productId: string,
-    //     productData: any
-    // ): Promise<Product | null> => {
-    //     const existingProduct = await this.productRepository.findOne({
-    //         where: { id: productId },
-    //     });
-
-    //     if (!existingProduct) {
-    //         return null; // product not found
-    //     }
-
-    //     const updatedProduct = this.productRepository.merge(
-    //         existingProduct,
-    //         productData
-    //     );
-    //     await this.productRepository.save(updatedProduct);
-
-    //     return updatedProduct;
-    // };
-
-
-    
     public updateProduct = async (
         productId: string,
         productData: any
     ): Promise<Product | null> => {
         const existingProduct = await this.productRepository.findOne({
             where: { id: productId },
-            relations: ['images'], // Load existing images for updating
+            relations: ['images', 'supplier', 'shops', 'orders', 'delivery'],  // Load existing images for updating
         });
     
         if (!existingProduct) {
             return null; // Product not found
         }
+
+        console.log('Product ID before update:', existingProduct.id);
+    
+        // Update product data
+        if (productData.name !== undefined) {
+            existingProduct.name = productData.name;
+        }
+        if (productData.description !== undefined) {
+            existingProduct.description = productData.description;
+        }
+        if (productData.price !== undefined) {
+            existingProduct.price = productData.price;
+        }
+        if (productData.inventoryQuantity !== undefined) {
+            existingProduct.inventoryQuantity = productData.inventoryQuantity;
+        }
+        if (productData.category !== undefined) {
+            existingProduct.category = productData.category;
+        }
+        if (productData.shops !== undefined) {
+            existingProduct.shops = productData.shops; // Assign shops directly to the product
+        }
     
         // Add new images if provided
-        if (productData.images && productData.images.length > 0) {
+        if (productData.imageUrls && productData.imageUrls.length > 0) {
             try {
-                await this.addProductImages(existingProduct, productData.images);
+                // Add new images
+                const newImageUrls = productData.imageUrls.slice(0, 6);
+                await this.addNewProductImages(existingProduct, newImageUrls);
             } catch (error) {
                 console.error('Error adding new images:', error);
                 throw error;
             }
         }
     
-        // Merge updated product data
-        const updatedProduct = this.productRepository.merge(
-            existingProduct,
-            productData
-        );
-    
         // Save the updated product
-        await this.productRepository.save(updatedProduct);
-    
-        return updatedProduct;
+        try {
+            await this.productRepository.save(existingProduct);
+            console.log('Product ID after update:', existingProduct.id);
+            // Construct a plain object with necessary properties to return in the response
+            const updatedProduct = {
+                id: existingProduct.id,
+                name: existingProduct.name,
+                description: existingProduct.description,
+                price: existingProduct.price,
+                inventoryQuantity: existingProduct.inventoryQuantity,
+                productStatus: existingProduct.productStatus,
+                primaryImageUrl: existingProduct.primaryImageUrl,
+                category: existingProduct.category,
+                createdAt: existingProduct.createdAt,
+                updatedAt: existingProduct.updatedAt,
+                images: existingProduct.images.map(image => ({
+                    id: image.id,
+                    imageUrl: image.imageUrl
+                })),
+                supplier: existingProduct.supplier,
+                shops: existingProduct.shops,
+                orders: existingProduct.orders,
+                delivery: existingProduct.delivery
+            };
+            return updatedProduct as Product;
+        } catch (error) {
+            console.error('Error updating product:', error);
+            throw error;
+        }
     };
     
     
     
+    private async addNewProductImages(
+        product: Product,
+        imageUrls: string[]
+    ): Promise<void> {
+        const existingImages = product.images || []; // Retrieve existing images
+    
+        const uploadedImageUrls = await Promise.all(
+            imageUrls.map(async (url) => {
+                try {
+                    // Upload new images to Cloudinary
+                    const result: any = await cloudinary.uploader.upload(url, {
+                        resource_type: 'image'
+                    });
+    
+                    return result.secure_url;
+                } catch (error) {
+                    console.error(
+                        'Error uploading image to Cloudinary:',
+                        error
+                    );
+                    throw error;
+                }
+            })
+        );
+    
+        // Create new ProductImage instances for new images
+        const newImages = uploadedImageUrls.map((url) => {
+            const image = new ProductImage();
+            image.imageUrl = url;
+            image.product = product;
+            return image;
+        });
+    
+        // Combine existing and new images
+        product.images = existingImages.concat(newImages);
+    
+        // Save the images
+        await this.productRepository.manager.save(ProductImage, newImages);
+    }
+    
+
+
 
     /**
      * Delete a product by ID
