@@ -204,7 +204,7 @@ class ProductService {
             throw error;
         }
     }
-      /**
+    /**
      * Update a product by ID
      */
     public updateProduct = async (
@@ -213,15 +213,15 @@ class ProductService {
     ): Promise<Product | null> => {
         const existingProduct = await this.productRepository.findOne({
             where: { id: productId },
-            relations: ['images', 'supplier', 'shops', 'orders', 'delivery'],  // Load existing images for updating
+            relations: ['images', 'supplier', 'shops', 'orders', 'delivery'], // Load existing images for updating
         });
-    
+
         if (!existingProduct) {
             return null; // Product not found
         }
 
         console.log('Product ID before update:', existingProduct.id);
-    
+
         // Update product data
         if (productData.name !== undefined) {
             existingProduct.name = productData.name;
@@ -241,7 +241,7 @@ class ProductService {
         if (productData.shops !== undefined) {
             existingProduct.shops = productData.shops; // Assign shops directly to the product
         }
-    
+
         // Add new images if provided
         if (productData.imageUrls && productData.imageUrls.length > 0) {
             try {
@@ -253,7 +253,7 @@ class ProductService {
                 throw error;
             }
         }
-    
+
         // Save the updated product
         try {
             await this.productRepository.save(existingProduct);
@@ -270,14 +270,14 @@ class ProductService {
                 category: existingProduct.category,
                 createdAt: existingProduct.createdAt,
                 updatedAt: existingProduct.updatedAt,
-                images: existingProduct.images.map(image => ({
+                images: existingProduct.images.map((image) => ({
                     id: image.id,
-                    imageUrl: image.imageUrl
+                    imageUrl: image.imageUrl,
                 })),
                 supplier: existingProduct.supplier,
                 shops: existingProduct.shops,
                 orders: existingProduct.orders,
-                delivery: existingProduct.delivery
+                delivery: existingProduct.delivery,
             };
             return updatedProduct as Product;
         } catch (error) {
@@ -285,23 +285,27 @@ class ProductService {
             throw error;
         }
     };
-    
-    
-    
+
     private async addNewProductImages(
         product: Product,
         imageUrls: string[]
     ): Promise<void> {
         const existingImages = product.images || []; // Retrieve existing images
-    
+
         const uploadedImageUrls = await Promise.all(
-            imageUrls.map(async (url) => {
+            imageUrls.map(async (url, index) => {
                 try {
                     // Upload new images to Cloudinary
                     const result: any = await cloudinary.uploader.upload(url, {
-                        resource_type: 'image'
+                        resource_type: 'image',
                     });
-    
+
+
+                    // Set the first image as the primary image if it's not already set
+                    if (index === 0 && !product.primaryImageUrl) {
+                        product.primaryImageUrl = result.secure_url;
+                    }
+
                     return result.secure_url;
                 } catch (error) {
                     console.error(
@@ -312,7 +316,7 @@ class ProductService {
                 }
             })
         );
-    
+
         // Create new ProductImage instances for new images
         const newImages = uploadedImageUrls.map((url) => {
             const image = new ProductImage();
@@ -320,16 +324,13 @@ class ProductService {
             image.product = product;
             return image;
         });
-    
+
         // Combine existing and new images
         product.images = existingImages.concat(newImages);
-    
+
         // Save the images
         await this.productRepository.manager.save(ProductImage, newImages);
     }
-    
-
-
 
     /**
      * Delete a product by ID

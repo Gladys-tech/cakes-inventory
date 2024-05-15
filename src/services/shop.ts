@@ -54,6 +54,9 @@ class ShopService {
         userId: string
     ): Promise<Shop> => {
         try {
+
+            console.log('Received userId:', userId); // Log the userId received
+            console.log('Received shopData:', shopData); // Log the shopData received
             // Fetch user details based on userId
             const user = await this.userRepository.findOne({
                 where: { id: userId },
@@ -78,6 +81,7 @@ class ShopService {
                 users: [user],
                 userId: user.id,
             });
+            console.log('Created newShop:', newShop); // Log the newShop object
 
             // If 'address' is provided in shopData, find or create the address entity
             if (shopData.address) {
@@ -134,6 +138,8 @@ class ShopService {
             // Save the new shop with its relationships
             await this.shopRepository.save(newShop);
 
+            console.log('Saved newShop:', newShop); // Log after saving
+
             return newShop;
         } catch (error) {
             console.error('Error creating shop:', error.message);
@@ -148,19 +154,32 @@ class ShopService {
         shopId: string,
         shopData: any
     ): Promise<Shop | null> => {
-        const existingShop = await this.shopRepository.findOne({
-            where: { id: shopId },
-        });
+        try {
+            const existingShop = await this.shopRepository.findOne({
+                where: { id: shopId },
+            });
 
-        if (!existingShop) {
-            return null; // shop not found
+            if (!existingShop) {
+                return null; // shop not found
+            }
+
+            // Merge the existing shop with the updated data
+            this.shopRepository.merge(existingShop, shopData);
+
+            // Save the updated shop
+            const updatedShop = await this.shopRepository.save(existingShop);
+
+            // Log the updated shop to verify changes
+            console.log("Updated Shop:", updatedShop);
+
+            return updatedShop;
+        } catch (error) {
+            console.error("Error updating shop:", error);
+            throw error; // Rethrow the error
         }
-
-        const updatedShop = this.shopRepository.merge(existingShop, shopData);
-        await this.shopRepository.save(updatedShop);
-
-        return updatedShop;
     };
+
+
 
     /**
      * Delete a shop by ID
