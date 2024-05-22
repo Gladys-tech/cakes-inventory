@@ -100,11 +100,9 @@ class ProductController {
 
         // Check if productId is undefined
         if (!productId) {
-            return res
-                .status(400)
-                .json({
-                    message: 'Product ID is missing in request parameters',
-                });
+            return res.status(400).json({
+                message: 'Product ID is missing in request parameters',
+            });
         }
 
         const productData = req.body; // Assuming product data is in the request body

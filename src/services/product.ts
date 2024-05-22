@@ -300,7 +300,6 @@ class ProductService {
                         resource_type: 'image',
                     });
 
-
                     // Set the first image as the primary image if it's not already set
                     if (index === 0 && !product.primaryImageUrl) {
                         product.primaryImageUrl = result.secure_url;

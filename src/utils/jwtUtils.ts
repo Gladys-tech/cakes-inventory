@@ -57,5 +57,3 @@ export const verifyResetToken = (token: string): any => {
         throw error;
     }
 };
-
-

@@ -54,7 +54,6 @@ class ShopService {
         userId: string
     ): Promise<Shop> => {
         try {
-
             console.log('Received userId:', userId); // Log the userId received
             console.log('Received shopData:', shopData); // Log the shopData received
             // Fetch user details based on userId
@@ -170,16 +169,14 @@ class ShopService {
             const updatedShop = await this.shopRepository.save(existingShop);
 
             // Log the updated shop to verify changes
-            console.log("Updated Shop:", updatedShop);
+            console.log('Updated Shop:', updatedShop);
 
             return updatedShop;
         } catch (error) {
-            console.error("Error updating shop:", error);
+            console.error('Error updating shop:', error);
             throw error; // Rethrow the error
         }
     };
-
-
 
     /**
      * Delete a shop by ID
