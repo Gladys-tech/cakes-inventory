@@ -69,6 +69,9 @@ export class Product {
     })
     orders: Order[];
 
+    // @OneToMany(type => Order, order => order.product) // Define the one-to-many relationship with Order
+    // orders: Order[]; // Define the orders property
+
     @OneToOne(() => Delivery, (delivery) => delivery.product)
     @JoinColumn()
     delivery: Delivery;

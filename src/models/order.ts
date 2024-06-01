@@ -106,6 +106,10 @@ export class Order {
     @JoinTable()
     products: Product[];
 
+    
+//   @ManyToOne(type => Product, product => product.orders) // Define the many-to-one relationship with Product
+//   product: Product; // Define the product property
+
     @ManyToMany(() => Shop, (shop) => shop.orders)
     @JoinTable()
     shops: Shop[];
