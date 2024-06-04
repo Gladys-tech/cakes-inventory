@@ -37,3 +37,4 @@ Logger.warn = function (message: string) {
     console.log(c.yellow(msg));
     warnStream.write(`${msg}\n`);
 };
+// E_rnU*KLQx3Yjuh
