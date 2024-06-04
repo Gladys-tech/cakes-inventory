@@ -1,10 +1,11 @@
 .idea/
-node_modules
+node_modules/
 build/
 tmp/
 temp/
 dist/
 logs/
+.env
 .env.local
 .env.development.local
 .env.test.local
@@ -14,5 +15,5 @@ yarn-debug.log*
 yarn-error.log*
 yarn.lock
 .DS_Store
-opt
+opt/
 package-lock.json
