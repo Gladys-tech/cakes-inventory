@@ -22,14 +22,14 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/michaelkasingye/inventory-api.git"
+        "url": "git+https://github.com/Gladys-tech/cakes-inventory.git"
     },
     "author": "michaelkasingye",
     "license": "ISC",
     "bugs": {
-        "url": "https://github.com/michaelkasingye/inventory-api/issues"
+        "url": "https://github.com/Gladys-tech/cakes-inventory/issues"
     },
-    "homepage": "https://github.com/michaelkasingye/inventory-api#readme",
+    "homepage": "https://github.com/Gladys-tech/cakes-inventory#readme",
     "devDependencies": {
         "@types/bcrypt": "^5.0.0",
         "@types/chai": "^4.3.11",

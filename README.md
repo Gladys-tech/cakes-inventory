@@ -1,3 +1,3 @@
 # inventory-api
 
-# yubu-inventory
+# cakes-inventory
