@@ -10,7 +10,7 @@ export default class OrderRoutes extends CommonRoutesConfig {
 
     configureRoutes() {
         // Apply authenticateToken middleware to protect these routes
-        this.app.use('/orders', authenticateToken);
+        // this.app.use('/orders', authenticateToken);
 
         // Read
         this.app.route('/orders').get(OrderController.getOrders);
@@ -25,11 +25,6 @@ export default class OrderRoutes extends CommonRoutesConfig {
 
         // Update
         this.app.route('/orders/:id').put(OrderController.updateOrder);
-
-        // Update product status within an order
-        this.app
-            .route('/orders/:orderId/products/:productId/status')
-            .put(OrderController.updateProductStatus);
 
         // Delete
         this.app.route('/orders/:id').delete(OrderController.deleteOrder);

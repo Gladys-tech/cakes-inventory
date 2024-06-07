@@ -35,16 +35,13 @@ export class Product {
     @Column({
         type: 'enum',
         enum: [
-            'order made',
-            'confirmed',
-            'transit',
-            'delivered',
-            'cancelled',
-            'delayed',
+            'in_stock',
+            'out_of_stock',
+            'on_order',
         ],
-        default: 'order made',
+        default: 'in_stock',
     })
-    productStatus: string;
+    productstatus: string;
 
     @ManyToOne(() => Supplier, (supplier) => supplier.products, {
         nullable: true, // Make the relationship optional
@@ -64,13 +61,10 @@ export class Product {
     @JoinTable()
     shops: Shop[];
 
-    @ManyToMany(() => Order, (order) => order.products, {
+    @OneToMany(() => Order, (order) => order.product, {
         cascade: ['remove'],
     })
     orders: Order[];
-
-    // @OneToMany(type => Order, order => order.product) // Define the one-to-many relationship with Order
-    // orders: Order[]; // Define the orders property
 
     @OneToOne(() => Delivery, (delivery) => delivery.product)
     @JoinColumn()

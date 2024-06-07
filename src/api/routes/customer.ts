@@ -10,7 +10,7 @@ export default class CustomerRoutes extends CommonRoutesConfig {
 
     configureRoutes() {
         // Apply authenticateToken middleware to protect these routes
-        this.app.use('/customers', authenticateToken);
+        // this.app.use('/customers', authenticateToken);
 
         // Read
         this.app.route('/customers').get(CustomerController.getCustomers);

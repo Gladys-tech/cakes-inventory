@@ -63,9 +63,6 @@ export class Order {
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    // @Column({ generated: 'uuid' })
-    // serialNumber: string;
-
     @Column({ type: 'float' })
     orderValue: number;
 
@@ -102,12 +99,9 @@ export class Order {
     @JoinColumn({ name: 'customerId' })
     customer: Customer;
 
-    @ManyToMany(() => Product, (product) => product.orders)
-    @JoinTable()
-    products: Product[];
-
-    //   @ManyToOne(type => Product, product => product.orders) // Define the many-to-one relationship with Product
-    //   product: Product; // Define the product property
+    @ManyToOne(() => Product, (product) => product.orders)
+    @JoinColumn({ name: 'productId' })
+    product: Product;
 
     @ManyToMany(() => Shop, (shop) => shop.orders)
     @JoinTable()
@@ -136,4 +130,6 @@ export class Order {
         onUpdate: 'CURRENT_TIMESTAMP',
     })
     updatedAt: Date;
+    newOrder: Product[];
+ 
 }

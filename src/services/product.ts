@@ -265,7 +265,7 @@ class ProductService {
                 description: existingProduct.description,
                 price: existingProduct.price,
                 inventoryQuantity: existingProduct.inventoryQuantity,
-                productStatus: existingProduct.productStatus,
+                productstatus: existingProduct.productstatus,
                 primaryImageUrl: existingProduct.primaryImageUrl,
                 category: existingProduct.category,
                 createdAt: existingProduct.createdAt,

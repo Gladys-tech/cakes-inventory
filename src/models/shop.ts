@@ -45,9 +45,7 @@ export class Shop {
     @JoinColumn({ name: 'addressId' })
     address: Address;
 
-    // @ManyToMany(() => Product, (product) => product.shops, { cascade: ['insert', 'update', 'remove'] })
-    // @JoinTable()
-    // products: Product[];
+    
     @ManyToMany(() => Product, (product) => product.shops, {
         cascade: ['remove'],
     })

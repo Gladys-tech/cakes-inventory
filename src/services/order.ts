@@ -1,7 +1,7 @@
 interface OrderCreationResponse {
-    order?: Order;
+    orders?: Order[]; 
     message?: string;
-    status: 'Success' | 'EmptyCartError' | 'OtherError'; // Add more statuses as needed
+    status: 'Success' | 'EmptyCartError' | 'OtherError' | 'CustomerNotFoundError'; // Add more statuses as needed
     shops?: Shop[];
 }
 
@@ -43,7 +43,7 @@ class OrderService {
         try {
             // Retrieve all orders with related data including products
             const orders = await this.orderRepository.find({
-                relations: ['customer', 'products', 'shops'],
+                relations: ['customer', 'product', 'product.shops'],
             });
 
             // Return the orders with products
@@ -57,41 +57,35 @@ class OrderService {
     /**
      * Retrieve an order by ID with detailed product information
      */
+   
     public getOrderById = async (orderId: string): Promise<Order | null> => {
         try {
             const order = await this.orderRepository.findOneOrFail({
                 where: { id: orderId },
-                relations: ['customer', 'products', 'shops'],
+                relations: ['customer', 'product', 'product.shops'],
             });
-
+    
             // Fetch detailed product information for each item in the cart
-            const cartWithProductInfo = await Promise.all(
-                order.customer.cart.map(async (cartItem) => {
-                    const productInfo = await this.productRepository.findOne({
-                        where: { id: cartItem.productId },
-                    });
-                    return {
-                        productId: cartItem.productId,
-                        quantity: cartItem.quantity,
-                        productInfo: productInfo || null, // Include product information or null if not found
-                    };
-                })
-            );
-
-            // Modify the order object to include detailed product information in the cart
-            const orderWithCartInfo = {
+            const productInfo = await this.productRepository.findOne({
+                where: { id: order.product.id }, // Use order.product.id instead of order.customer.cart.productId
+            });
+    
+            // Modify the order object to include detailed product information
+            const orderWithProductInfo = {
                 ...order,
-                products: cartWithProductInfo
-                    .map((cartItem) => cartItem.productInfo)
-                    .filter((productInfo) => productInfo !== null),
+                product: {
+                    ...order.product,
+                    productInfo: productInfo || null, // Include product information or null if not found
+                },
             };
-
-            return orderWithCartInfo;
+    
+            return orderWithProductInfo;
         } catch (error) {
             console.error('Error retrieving order by ID:', error.message);
             return null;
         }
     };
+    
 
     // get orders by shop id.
     public getOrdersByShopId = async (shopId: string): Promise<Order[]> => {
@@ -140,192 +134,91 @@ class OrderService {
         const currentDate = new Date();
         const expectedDeliveryDate = new Date(currentDate);
         expectedDeliveryDate.setDate(currentDate.getDate() + 3);
-
-        // Create a new order instance with basic data
-        const newOrder = this.orderRepository.create({
-            // serialNumber: orderData.serialNumber, // Add 'serialNumber' to your Order model if necessary
-            orderValue: 0,
-            quantity: 0,
-            totalCommission: 0,
-            actualMoney: 0,
-
-            // client: orderData.client,
-            client: orderData.customer
-                ? this.generateClientName(orderData.customer)
-                : '',
-            expectedDeliveryDate: expectedDeliveryDate
-                .toISOString()
-                .split('T')[0], // Format as 'YYYY-MM-DD'
-            status: orderData.status,
-            paymentMethod: orderData.paymentMethod,
-        } as DeepPartial<Order>);
-
-        // If 'customer' is provided in orderData, find customer.
-        if (orderData.customer && orderData.customer.customerId) {
-            try {
+    
+        try {
+            // If 'customer' is provided in orderData, find customer.
+            if (orderData.customer && orderData.customer.customerId) {
                 const customer = await this.customerRepository.findOneOrFail({
                     where: { id: orderData.customer.customerId },
+                    // relations: ['cart'], // Load cart relation
                 });
-                newOrder.customer = customer;
-
-                // If 'cart' is available in the customer data, proceed with updating products
+    
+                // Check if the customer has a cart
                 if (customer.cart && customer.cart.length > 0) {
-                    const productEntities: Product[] = [];
-
-                    // Concatenate first and last names for the client field
-                    const clientName =
-                        customer.firstName && customer.lastName
-                            ? `${customer.firstName} ${customer.lastName}`
-                            : '';
-
-                    // Set the client field
-                    newOrder.client = clientName;
-
-                    // Loop through the customer's cart before checking products
+                    const orders: Order[] = [];
+    
+                    // Loop through the customer's cart
                     for (const cartItem of customer.cart) {
                         const productId = cartItem.productId;
                         const productQuantity = cartItem.quantity;
-
+    
                         try {
-                            // Find existing product by ID
-                            const product =
-                                await this.productRepository.findOne({
-                                    where: { id: cartItem.productId },
-                                });
-
-                            if (product) {
-                                // Retrieve the shops from the database using the unique shop IDs
-                                const shops = product.shops;
-
-                                // Add the retrieved shops to the order
-                                newOrder.shops = shops;
-
-                                // Check if the product is in the customer's cart
-
-                                // Reduce inventoryQuantity by the quantity in the customer's cart
-                                const reducedQuantity = Math.min(
-                                    cartItem.quantity,
-                                    product.inventoryQuantity
-                                );
-
-                                product.inventoryQuantity -= reducedQuantity;
-
-                                // Check if inventoryQuantity is non-negative
-                                if (product.inventoryQuantity < 0) {
-                                    console.error(
-                                        'Insufficient inventory for product:',
-                                        product.name
-                                    );
-                                    throw new Error('Insufficient inventory');
-                                }
-
-                                // Set the product status based on orderData
-                                product.productStatus = orderData.status;
-
-                                // Calculate orderValue based on product price and quantity
-                                newOrder.orderValue +=
-                                    product.price * reducedQuantity;
-
-                                // Update quantity
-                                newOrder.quantity += reducedQuantity;
-
-                                // Save the updated product to the database
-                                await this.productRepository.save(product);
-
-                                productEntities.push(product);
-                            } else {
-                                console.error(
-                                    'Product not found with ID:',
-                                    cartItem.productId
-                                );
-                            }
-
-                            // Calculate total commission and actual money .
-                            let totalCommission = 0;
-                            let actualMoney = 0;
-
-                            // Loop through the products in the order
-                            for (const productEntity of productEntities) {
-                                const product = productEntity as Product;
-
-                                // Calculate commission for each product.
-                                const productPriceWithoutCommission =
-                                    product.price * 0.8; // Remove the 20%
-                                const commission = product.price * 0.2;
-
-                                // Add product commission to the total commission
-                                totalCommission += commission;
-
-                                // Subtract product commission from the order value
-                                actualMoney += productPriceWithoutCommission;
-                            }
-
-                            // Update the order's commission and actual money properties
-                            newOrder.totalCommission =
-                                totalCommission * cartItem.quantity;
-                            newOrder.actualMoney =
-                                actualMoney * cartItem.quantity;
+                            // Find the product by ID
+                            const product = await this.productRepository.findOneOrFail({
+                                where: { id: productId },
+                                relations: ['shops'], // Optionally load related shops
+                            });
+    
+                            // Create a new order instance for the current product
+                            const newOrder = this.orderRepository.create({
+                                orderValue: product.price * productQuantity, // Use product price multiplied by quantity as order value
+                                quantity: productQuantity, // Set quantity to cart item quantity
+                                totalCommission: product.price * productQuantity * 0.2, // Assuming commission is 20% of the total price
+                                actualMoney: product.price * productQuantity * 0.8, // Assuming 80% of the total price is actual money
+                                client: customer.firstName && customer.lastName ? `${customer.firstName} ${customer.lastName}` : '', // Set client name from customer data
+                                expectedDeliveryDate: expectedDeliveryDate.toISOString().split('T')[0],
+                                status: orderData.status,
+                                paymentMethod: orderData.paymentMethod,
+                                customer: customer, // Set customer for the order
+                                product: product, // Set product for the order
+                                shops: product.shops, // Set shops for the order
+                            });
+    
+                            // Save the new order to the database
+                            const savedOrder = await this.orderRepository.save(newOrder);
+                            orders.push(savedOrder);
+                            
+                            // Update product inventory quantity
+                            product.inventoryQuantity -= productQuantity;
+                            await this.productRepository.save(product);
                         } catch (error) {
-                            console.error(
-                                'Error retrieving product:',
-                                error.message
-                            );
+                            console.error('Error creating order for product:', productId, error.message);
                         }
                     }
-
-                    // Set the products for the order
-                    newOrder.products = productEntities;
+    
+                    // Empty the customer's cart after orders are created
+                    customer.cart = [];
+                    await this.customerRepository.save(customer);
+    
+                    return {
+                        status: 'Success',
+                        orders: orders,
+                    };
                 } else {
                     // If the cart is empty, throw an error or handle it as needed
-                    console.error(
-                        'Customer cart is empty. Cannot create an order.'
-                    );
+                    console.error('Customer cart is empty. Cannot create orders.');
                     return {
-                        message:
-                            'Customer cart is empty. Cannot create an order.',
+                        message: 'Customer cart is empty. Cannot create orders.',
                         status: 'EmptyCartError',
                     };
                 }
-            } catch (error) {
-                console.error('Error retrieving customer:', error.message);
+            } else {
+                // If customer is not provided or not found, return an error
+                console.error('Customer not found.');
+                return {
+                    message: 'Customer not found.',
+                    status: 'CustomerNotFoundError',
+                };
             }
+        } catch (error) {
+            console.error('Error creating orders:', error.message);
+            return {
+                message: 'Error creating orders.',
+                status: 'OtherError',
+            };
         }
-
-        // Save the new order with its relationships
-        await this.orderRepository.save(newOrder);
-
-        // Reload the order with products to ensure the correct association is reflected in the response
-        const savedOrder = await this.orderRepository.findOneOrFail({
-            where: { id: newOrder.id },
-            relations: ['customer', 'products', 'products.shops'],
-        });
-
-        // Extract the shops array from the saved order's products
-        const shopsArray = savedOrder.products.reduce(
-            (acc: Shop[], product: Product) => {
-                return acc.concat(product.shops);
-            },
-            []
-        );
-
-        // Remove duplicate shops, if any
-        const uniqueShops = Array.from(new Set(shopsArray));
-
-        // Empty the customer's cart after the order is made
-        // if (savedOrder.status === 'order made' && savedOrder.customer) {
-        //     savedOrder.customer.cart = [];
-        //     await this.customerRepository.save(savedOrder.customer);
-        // }
-
-        // return savedOrder;
-        // return newOrder;
-
-        return {
-            status: 'Success',
-            order: savedOrder,
-            shops: uniqueShops,
-        };
     };
+    
 
     /**
      * Update an order by ID
@@ -351,39 +244,158 @@ class OrderService {
         return updatedOrder;
     };
 
-    /**
-     * Update product status within an order
-     */
-    public updateProductStatus = async (
-        orderId: string,
-        productId: string,
-        productStatus: string
-    ): Promise<Order | null> => {
-        const existingOrder = await this.orderRepository.findOne({
-            where: { id: orderId },
-            relations: ['products'],
-        });
 
-        if (!existingOrder) {
-            return null; // order not found
-        }
 
-        const existingProduct = existingOrder.products.find(
-            (product) => product.id === productId
-        );
+    // {
+    //     "status": "CREATED",
+    //     "order": {
+    //         "status": "Success",
+    //         "orders": [
+    //             {
+    //                 "orderValue": 200000,
+    //                 "quantity": 2,
+    //                 "totalCommission": 40000,
+    //                 "actualMoney": 160000,
+    //                 "client": "gladys mukasa",
+    //                 "expectedDeliveryDate": "2024-06-09",
+    //                 "customer": {
+    //                     "id": "1be13ada-8e1a-4ebe-80c4-e6ee924e60f1",
+    //                     "firstName": "gladys",
+    //                     "lastName": "mukasa",
+    //                     "email": "gladysca@gmail.com",
+    //                     "location": "kampala",
+    //                     "telphone": "1234567890",
+    //                     "isEmailVerified": true,
+    //                     "cart": [
+    //                         {
+    //                             "productId": "3d442e46-6747-404d-bc6e-e3a9264f5f94",
+    //                             "quantity": 2
+    //                         },
+    //                         {
+    //                             "productId": "ca264d0b-9b6b-4409-9e1b-5c54123e9d7d",
+    //                             "quantity": 2
+    //                         }
+    //                     ]
+    //                 },
+    //                 "product": {
+    //                     "id": "3d442e46-6747-404d-bc6e-e3a9264f5f94",
+    //                     "name": "herbal lotions",
+    //                     "description": "This is a sample product description.",
+    //                     "price": "100000.00",
+    //                     "inventoryQuantity": 100,
+    //                     "productStatus": "order made",
+    //                     "primaryImageUrl": "https://res.cloudinary.com/ddpv9z6rn/image/upload/v1707662658/sl2bbzmt77nogdei3tda.jpg",
+    //                     "category": null,
+    //                     "createdAt": "2024-02-11T14:44:15.426Z",
+    //                     "updatedAt": "2024-02-11T14:44:15.426Z",
+    //                     "shops": [
+    //                         {
+    //                             "id": "3bdc9e44-94f2-43fb-9078-646cdde827da",
+    //                             "name": "shop4",
+    //                             "description": "Description for shop4",
+    //                             "ownerName": "glad4",
+    //                             "email": "glad4@gmail.com",
+    //                             "type": "online",
+    //                             "createdAt": "2024-01-18T19:25:29.026Z",
+    //                             "updatedAt": "2024-01-18T19:25:29.026Z",
+    //                             "userId": null
+    //                         }
+    //                     ]
+    //                 },
+    //                 "shops": [
+    //                     {
+    //                         "id": "3bdc9e44-94f2-43fb-9078-646cdde827da",
+    //                         "name": "shop4",
+    //                         "description": "Description for shop4",
+    //                         "ownerName": "glad4",
+    //                         "email": "glad4@gmail.com",
+    //                         "type": "online",
+    //                         "createdAt": "2024-01-18T19:25:29.026Z",
+    //                         "updatedAt": "2024-01-18T19:25:29.026Z",
+    //                         "userId": null
+    //                     }
+    //                 ],
+    //                 "id": "55385fce-faad-42df-a0a0-f1eb7c62c1f9",
+    //                 "status": "order made",
+    //                 "paymentMethod": "cash_on_delivery",
+    //                 "createdAt": "2024-06-06T09:32:24.700Z",
+    //                 "updatedAt": "2024-06-06T09:32:24.700Z"
+    //             },
+    //             {
+    //                 "orderValue": 59.98,
+    //                 "quantity": 2,
+    //                 "totalCommission": 11.996,
+    //                 "actualMoney": 47.984,
+    //                 "client": "gladys mukasa",
+    //                 "expectedDeliveryDate": "2024-06-09",
+    //                 "customer": {
+    //                     "id": "1be13ada-8e1a-4ebe-80c4-e6ee924e60f1",
+    //                     "firstName": "gladys",
+    //                     "lastName": "mukasa",
+    //                     "email": "gladysca@gmail.com",
+    //                     "location": "kampala",
+    //                     "telphone": "1234567890",
+    //                     "isEmailVerified": true,
+    //                     "cart": [
+    //                         {
+    //                             "productId": "3d442e46-6747-404d-bc6e-e3a9264f5f94",
+    //                             "quantity": 2
+    //                         },
+    //                         {
+    //                             "productId": "ca264d0b-9b6b-4409-9e1b-5c54123e9d7d",
+    //                             "quantity": 2
+    //                         }
+    //                     ]
+    //                 },
+    //                 "product": {
+    //                     "id": "ca264d0b-9b6b-4409-9e1b-5c54123e9d7d",
+    //                     "name": "herbal Product",
+    //                     "description": "This is a sample product description.",
+    //                     "price": "29.99",
+    //                     "inventoryQuantity": 98,
+    //                     "productStatus": "order made",
+    //                     "primaryImageUrl": "https://res.cloudinary.com/ddpv9z6rn/image/upload/v1706791022/v84le0xf7ar1n10me90b.jpg",
+    //                     "category": null,
+    //                     "createdAt": "2024-02-01T12:36:59.941Z",
+    //                     "updatedAt": "2024-02-01T12:36:59.941Z",
+    //                     "shops": [
+    //                         {
+    //                             "id": "3bdc9e44-94f2-43fb-9078-646cdde827da",
+    //                             "name": "shop4",
+    //                             "description": "Description for shop4",
+    //                             "ownerName": "glad4",
+    //                             "email": "glad4@gmail.com",
+    //                             "type": "online",
+    //                             "createdAt": "2024-01-18T19:25:29.026Z",
+    //                             "updatedAt": "2024-01-18T19:25:29.026Z",
+    //                             "userId": null
+    //                         }
+    //                     ]
+    //                 },
+    //                 "shops": [
+    //                     {
+    //                         "id": "3bdc9e44-94f2-43fb-9078-646cdde827da",
+    //                         "name": "shop4",
+    //                         "description": "Description for shop4",
+    //                         "ownerName": "glad4",
+    //                         "email": "glad4@gmail.com",
+    //                         "type": "online",
+    //                         "createdAt": "2024-01-18T19:25:29.026Z",
+    //                         "updatedAt": "2024-01-18T19:25:29.026Z",
+    //                         "userId": null
+    //                     }
+    //                 ],
+    //                 "id": "dcab2b9b-0389-4570-956d-834e4ffa1157",
+    //                 "status": "order made",
+    //                 "paymentMethod": "cash_on_delivery",
+    //                 "createdAt": "2024-06-06T09:32:25.618Z",
+    //                 "updatedAt": "2024-06-06T09:32:25.618Z"
+    //             }
+    //         ]
+    //     }
+    // }
 
-        if (!existingProduct) {
-            return null; // product not found in the order
-        }
-
-        // Update product status
-        existingProduct.productStatus = productStatus;
-
-        // Save the updated product to the database
-        await this.productRepository.save(existingProduct);
-
-        return existingOrder;
-    };
+   
 
     /**
      * Delete an order by ID
@@ -402,58 +414,6 @@ class OrderService {
         return orderToDelete;
     };
 
-    /**
-     * Process Payment for an Order
-     */
-    // public async processPayment(order: Order): Promise<boolean> {
-    //     const paymentMethod = order.paymentMethod;
-
-    //     switch (paymentMethod) {
-    //         case PaymentMethod.AirtelMoney:
-    //             // Call Airtel Money API to process payment
-    //             const airtelMoneyPaymentSuccess = await this.processAirtelMoneyPayment(order);
-    //             return airtelMoneyPaymentSuccess;
-
-    //         case PaymentMethod.MTNMobileMoney:
-    //             // Call MTN Mobile Money API to process payment
-    //             const mtnMobileMoneyPaymentSuccess = await this.processMTNMobileMoneyPayment(order);
-    //             return mtnMobileMoneyPaymentSuccess;
-
-    //         case PaymentMethod.CashOnDelivery:
-    //             // For Cash on Delivery, assume success since payment is collected offline
-    //             return true;
-
-    //         default:
-    //             console.error('Invalid payment method:', paymentMethod);
-    //             return false;
-    //     }
-    // }
-
-    // private async processAirtelMoneyPayment(order: Order): Promise<boolean> {
-    //     // Implement logic to interact with Airtel Money API
-    //     // Set order status based on payment success or failure
-
-    //     const paymentSuccess = /* Your logic to determine if payment is successful or not */;
-
-    //     // Set order status based on payment success or failure
-    //     order.status = paymentSuccess ? 'confirmed' : 'cancelled';
-
-    //     // Return true if payment is successful, false otherwise
-    //     return paymentSuccess;
-    // }
-
-    // private async processMTNMobileMoneyPayment(order: Order): Promise<boolean> {
-    //     // Implement logic to interact with MTN Mobile Money API
-    //     // Set order status based on payment success or failure
-
-    //     const paymentSuccess = /* Your logic to determine if payment is successful or not */;
-
-    //     // Set order status based on payment success or failure
-    //     order.status = paymentSuccess ? 'confirmed' : 'cancelled';
-
-    //     // Return true if payment is successful, false otherwise
-    //     return paymentSuccess;
-    // }
 }
 
 export default new OrderService();
