@@ -34,11 +34,7 @@ export class Product {
 
     @Column({
         type: 'enum',
-        enum: [
-            'in_stock',
-            'out_of_stock',
-            'on_order',
-        ],
+        enum: ['in_stock', 'out_of_stock', 'on_order'],
         default: 'in_stock',
     })
     productstatus: string;
@@ -79,4 +75,8 @@ export class Product {
         onUpdate: 'CURRENT_TIMESTAMP',
     })
     updatedAt: Date;
+
+
+    @Column({ nullable: true }) 
+    ingredients: string;
 }

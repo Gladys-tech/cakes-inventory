@@ -12,7 +12,7 @@ export default class UserRoutes extends CommonRoutesConfig {
 
     configureRoutes() {
         // Apply authenticateToken middleware to protect these routes
-        this.app.use('/users', authenticateToken);
+        // this.app.use('/users', authenticateToken);
 
         // Read
         this.app.route('/users').get(UserController.getUsers);
@@ -31,7 +31,8 @@ export default class UserRoutes extends CommonRoutesConfig {
         this.app
             .route('/signup')
             .post(
-                body('name').exists().notEmpty(),
+                body('firstName').exists().notEmpty(),
+                body('lastName').exists().notEmpty(),
                 body('email').exists().notEmpty(),
                 body('password').exists().notEmpty(),
                 UserController.signup

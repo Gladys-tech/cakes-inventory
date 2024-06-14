@@ -1,4 +1,3 @@
-
 require('dotenv').config();
 
 import { dataSource } from './data-source';

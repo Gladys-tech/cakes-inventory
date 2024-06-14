@@ -131,5 +131,4 @@ export class Order {
     })
     updatedAt: Date;
     newOrder: Product[];
- 
 }

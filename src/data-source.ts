@@ -1,4 +1,3 @@
-
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import { User } from './models/user';
@@ -27,4 +26,3 @@ export const dataSource = new DataSource({
     migrations: ['src/migrations/**/*{.ts,.js}'],
     subscribers: [],
 });
-

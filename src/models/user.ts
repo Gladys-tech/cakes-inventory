@@ -135,7 +135,8 @@ export class User extends SoftDeletableEntity {
     resetTokenExpires: Date;
 
     @OneToOne(() => Address, (address) => address.user, { nullable: true })
-    @JoinColumn()
+    // @JoinColumn()
+    @JoinColumn({ name: 'userId' })
     address: Address;
 
     @OneToOne(() => Delivery, (delivery) => delivery.user)

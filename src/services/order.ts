@@ -1,7 +1,11 @@
 interface OrderCreationResponse {
-    orders?: Order[]; 
+    orders?: Order[];
     message?: string;
-    status: 'Success' | 'EmptyCartError' | 'OtherError' | 'CustomerNotFoundError'; // Add more statuses as needed
+    status:
+        | 'Success'
+        | 'EmptyCartError'
+        | 'OtherError'
+        | 'CustomerNotFoundError'; // Add more statuses as needed
     shops?: Shop[];
 }
 
@@ -57,19 +61,19 @@ class OrderService {
     /**
      * Retrieve an order by ID with detailed product information
      */
-   
+
     public getOrderById = async (orderId: string): Promise<Order | null> => {
         try {
             const order = await this.orderRepository.findOneOrFail({
                 where: { id: orderId },
                 relations: ['customer', 'product', 'product.shops'],
             });
-    
+
             // Fetch detailed product information for each item in the cart
             const productInfo = await this.productRepository.findOne({
                 where: { id: order.product.id }, // Use order.product.id instead of order.customer.cart.productId
             });
-    
+
             // Modify the order object to include detailed product information
             const orderWithProductInfo = {
                 ...order,
@@ -78,14 +82,13 @@ class OrderService {
                     productInfo: productInfo || null, // Include product information or null if not found
                 },
             };
-    
+
             return orderWithProductInfo;
         } catch (error) {
             console.error('Error retrieving order by ID:', error.message);
             return null;
         }
     };
-    
 
     // get orders by shop id.
     public getOrdersByShopId = async (shopId: string): Promise<Order[]> => {
@@ -134,7 +137,7 @@ class OrderService {
         const currentDate = new Date();
         const expectedDeliveryDate = new Date(currentDate);
         expectedDeliveryDate.setDate(currentDate.getDate() + 3);
-    
+
         try {
             // If 'customer' is provided in orderData, find customer.
             if (orderData.customer && orderData.customer.customerId) {
@@ -142,63 +145,80 @@ class OrderService {
                     where: { id: orderData.customer.customerId },
                     // relations: ['cart'], // Load cart relation
                 });
-    
+
                 // Check if the customer has a cart
                 if (customer.cart && customer.cart.length > 0) {
                     const orders: Order[] = [];
-    
+
                     // Loop through the customer's cart
                     for (const cartItem of customer.cart) {
                         const productId = cartItem.productId;
                         const productQuantity = cartItem.quantity;
-    
+
                         try {
                             // Find the product by ID
-                            const product = await this.productRepository.findOneOrFail({
-                                where: { id: productId },
-                                relations: ['shops'], // Optionally load related shops
-                            });
-    
+                            const product =
+                                await this.productRepository.findOneOrFail({
+                                    where: { id: productId },
+                                    relations: ['shops'], // Optionally load related shops
+                                });
+
                             // Create a new order instance for the current product
                             const newOrder = this.orderRepository.create({
                                 orderValue: product.price * productQuantity, // Use product price multiplied by quantity as order value
                                 quantity: productQuantity, // Set quantity to cart item quantity
-                                totalCommission: product.price * productQuantity * 0.2, // Assuming commission is 20% of the total price
-                                actualMoney: product.price * productQuantity * 0.8, // Assuming 80% of the total price is actual money
-                                client: customer.firstName && customer.lastName ? `${customer.firstName} ${customer.lastName}` : '', // Set client name from customer data
-                                expectedDeliveryDate: expectedDeliveryDate.toISOString().split('T')[0],
+                                totalCommission:
+                                    product.price * productQuantity * 0.2, // Assuming commission is 20% of the total price
+                                actualMoney:
+                                    product.price * productQuantity * 0.8, // Assuming 80% of the total price is actual money
+                                client:
+                                    customer.firstName && customer.lastName
+                                        ? `${customer.firstName} ${customer.lastName}`
+                                        : '', // Set client name from customer data
+                                expectedDeliveryDate: expectedDeliveryDate
+                                    .toISOString()
+                                    .split('T')[0],
                                 status: orderData.status,
                                 paymentMethod: orderData.paymentMethod,
                                 customer: customer, // Set customer for the order
                                 product: product, // Set product for the order
                                 shops: product.shops, // Set shops for the order
                             });
-    
+
                             // Save the new order to the database
-                            const savedOrder = await this.orderRepository.save(newOrder);
+                            const savedOrder = await this.orderRepository.save(
+                                newOrder
+                            );
                             orders.push(savedOrder);
-                            
+
                             // Update product inventory quantity
                             product.inventoryQuantity -= productQuantity;
                             await this.productRepository.save(product);
                         } catch (error) {
-                            console.error('Error creating order for product:', productId, error.message);
+                            console.error(
+                                'Error creating order for product:',
+                                productId,
+                                error.message
+                            );
                         }
                     }
-    
+
                     // Empty the customer's cart after orders are created
                     customer.cart = [];
                     await this.customerRepository.save(customer);
-    
+
                     return {
                         status: 'Success',
                         orders: orders,
                     };
                 } else {
                     // If the cart is empty, throw an error or handle it as needed
-                    console.error('Customer cart is empty. Cannot create orders.');
+                    console.error(
+                        'Customer cart is empty. Cannot create orders.'
+                    );
                     return {
-                        message: 'Customer cart is empty. Cannot create orders.',
+                        message:
+                            'Customer cart is empty. Cannot create orders.',
                         status: 'EmptyCartError',
                     };
                 }
@@ -218,7 +238,6 @@ class OrderService {
             };
         }
     };
-    
 
     /**
      * Update an order by ID
@@ -243,8 +262,6 @@ class OrderService {
 
         return updatedOrder;
     };
-
-
 
     // {
     //     "status": "CREATED",
@@ -395,8 +412,6 @@ class OrderService {
     //     }
     // }
 
-   
-
     /**
      * Delete an order by ID
      */
@@ -413,7 +428,6 @@ class OrderService {
 
         return orderToDelete;
     };
-
 }
 
 export default new OrderService();

@@ -28,7 +28,7 @@ class UserService {
     public getUserById = async (userId: string): Promise<User | null> => {
         const user = await this.userRepository.findOne({
             where: { id: userId },
-            relations: ['shops'],
+            relations: ['shops',  'address'],
         });
         return user || null;
     };
@@ -103,61 +103,17 @@ class UserService {
      * Get user by email and password
      */
 
-    // public getUserByEmailAndPassword = async (
-    //     email: string,
-    //     password: string
-    // ): Promise<
-    // // User | null
-    // { token: string | null; user: User | null }
-    // > => {
-    //     try {
-    //         const user = await this.userRepository.findOne({
-    //             where: {
-    //                 email: email,
-    //             },
-    //         });
-
-    //         if (user) {
-    //             console.log('Retrieved user:', user);
-
-    //             if (user.password === null || user.password === undefined) {
-    //                 console.error('User password is missing or null.');
-    //                 return null;
-    //             }
-
-    //             const isPasswordValid = await comparePasswords(
-    //                 password,
-    //                 user.password
-    //             );
-
-    //             if (isPasswordValid) {
-    //                 console.log('compared passwords for user:', user);
-    //                 const token = generateJwtToken(user);
-    //                 return { token: token, user: user };
-    //                 // return user;
-    //             } else {
-    //                 console.error('Invalid password.');
-    //                 return null;
-    //             }
-    //         } else {
-    //             console.error('User not found with the provided email.');
-    //             return null;
-    //         }
-    //     } catch (error) {
-    //         console.error('Error during getUserByEmailAndPassword:', error);
-    //         return null;
-    //     }
-    // };
-
     public getUserByEmailAndPassword = async (
         email: string,
         password: string
     ): Promise<{ user: User | null; token: string }> => {
         try {
+            console.log('Received login request for email:', email); 
             const user = await this.userRepository.findOne({
                 where: {
                     email: email,
                 },
+                relations: ['address'],
             });
 
             if (user) {

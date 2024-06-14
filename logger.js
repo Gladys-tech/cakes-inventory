@@ -1,17 +1,19 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
+'use strict';
+var __importDefault =
+    (this && this.__importDefault) ||
+    function (mod) {
+        return mod && mod.__esModule ? mod : { default: mod };
+    };
+Object.defineProperty(exports, '__esModule', { value: true });
 exports.Logger = void 0;
-const fs_1 = __importDefault(require("fs"));
-const ansi_colors_1 = __importDefault(require("ansi-colors"));
+const fs_1 = __importDefault(require('fs'));
+const ansi_colors_1 = __importDefault(require('ansi-colors'));
 // Create a folder for logs if it doesn't exist
 if (!fs_1.default.existsSync('logs')) {
     fs_1.default.mkdirSync('logs');
 }
 // Make a Logger object available to whatever file refrences it.
-exports.Logger = (exports.Logger = {});
+exports.Logger = exports.Logger = {};
 const infoStream = fs_1.default.createWriteStream('logs/info.txt');
 const errorStream = fs_1.default.createWriteStream('logs/error.txt');
 const debugStream = fs_1.default.createWriteStream('logs/debug.txt');

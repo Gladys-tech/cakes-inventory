@@ -128,6 +128,7 @@ class ProductService {
             inventoryQuantity: productData.inventoryQuantity,
             category: productData.category,
             shops: productData.shops, // Assign shops directly to the product
+            ingredients:productData.ingredients,
         });
 
         if (productData.shops && productData.shops.length > 0) {
@@ -238,6 +239,9 @@ class ProductService {
         if (productData.category !== undefined) {
             existingProduct.category = productData.category;
         }
+        if (productData.ingredients !== undefined) {
+            existingProduct.ingredients = productData.ingredients;
+        }
         if (productData.shops !== undefined) {
             existingProduct.shops = productData.shops; // Assign shops directly to the product
         }
@@ -278,6 +282,8 @@ class ProductService {
                 shops: existingProduct.shops,
                 orders: existingProduct.orders,
                 delivery: existingProduct.delivery,
+                ingredients: existingProduct. ingredients,
+               
             };
             return updatedProduct as Product;
         } catch (error) {

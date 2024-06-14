@@ -114,8 +114,6 @@ class OrderController {
         }
     };
 
-   
-
     // delete an order
     public deleteOrder = async (req: Request, res: Response) => {
         const orderId = req.params.id;
