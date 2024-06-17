@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { UserRepository } from '../repositories';
+import { AddressRepository, UserRepository } from '../repositories';
 import { User } from '../models/user';
 import { hashPassword, comparePasswords } from '../utils/passwordUtils';
 import { sendPasswordResetEmail } from '../utils/emailUtils';
@@ -9,9 +9,11 @@ import { MoreThanOrEqual } from 'typeorm';
 
 class UserService {
     private readonly userRepository: typeof UserRepository;
+    private readonly addressRepository: typeof AddressRepository;
 
     constructor() {
         this.userRepository = UserRepository;
+        this.addressRepository = AddressRepository;
     }
 
     /**
@@ -28,7 +30,7 @@ class UserService {
     public getUserById = async (userId: string): Promise<User | null> => {
         const user = await this.userRepository.findOne({
             where: { id: userId },
-            relations: ['shops',  'address'],
+            relations: ['shops', 'address'],
         });
         return user || null;
     };
@@ -56,6 +58,27 @@ class UserService {
             resetTokenExpires: userData.resetTokenExpires,
         });
 
+        // await this.userRepository.save(newUser);
+        // Save user to database
+        await this.userRepository.save(newUser);
+
+        // Create address entity and associate with the user
+        const newAddress = this.addressRepository.create({
+            street: userData.address.street,
+            city: userData.address.city,
+            state: userData.address.state,
+            country: userData.address.country,
+            telphone: userData.address.telphone,
+            user: newUser, // Associate the address with the newly created user
+        });
+
+        // Save address to database
+        await this.addressRepository.save(newAddress);
+
+        // Assign the created address to the newUser
+        newUser.address = newAddress;
+
+        // Save the updated user entity to reflect the address association
         await this.userRepository.save(newUser);
 
         return newUser;
@@ -108,7 +131,7 @@ class UserService {
         password: string
     ): Promise<{ user: User | null; token: string }> => {
         try {
-            console.log('Received login request for email:', email); 
+            console.log('Received login request for email:', email);
             const user = await this.userRepository.findOne({
                 where: {
                     email: email,

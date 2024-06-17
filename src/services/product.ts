@@ -128,7 +128,7 @@ class ProductService {
             inventoryQuantity: productData.inventoryQuantity,
             category: productData.category,
             shops: productData.shops, // Assign shops directly to the product
-            ingredients:productData.ingredients,
+            ingredients: productData.ingredients,
         });
 
         if (productData.shops && productData.shops.length > 0) {
@@ -282,8 +282,7 @@ class ProductService {
                 shops: existingProduct.shops,
                 orders: existingProduct.orders,
                 delivery: existingProduct.delivery,
-                ingredients: existingProduct. ingredients,
-               
+                ingredients: existingProduct.ingredients,
             };
             return updatedProduct as Product;
         } catch (error) {

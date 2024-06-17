@@ -76,7 +76,6 @@ export class Product {
     })
     updatedAt: Date;
 
-
-    @Column({ nullable: true }) 
+    @Column({ nullable: true })
     ingredients: string;
 }

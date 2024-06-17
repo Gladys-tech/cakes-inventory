@@ -4,10 +4,13 @@ import {
     PrimaryGeneratedColumn,
     Index,
     OneToMany,
+    ManyToOne,
+    JoinColumn,
 } from 'typeorm';
 // import { SoftDeletableEntity } from './abstracts/soft-deleteable';
 import { Order } from './order';
 import { Payment } from './payment';
+import { User } from './user';
 
 // /**
 //  * @schema customer
@@ -59,9 +62,13 @@ export class Customer {
     @Column({ nullable: true })
     lastName: string;
 
-    @Index({ unique: true })
-    @Column()
+    // @Index({ unique: true })
+    @Column({nullable: true})
     email: string;
+
+    // @ManyToOne(() => User, (user) => user.customers, { nullable: false })
+    // @JoinColumn({ name: 'userId' })
+    // user: User;
 
     @Column({ nullable: true })
     location: string;

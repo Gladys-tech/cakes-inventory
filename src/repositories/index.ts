@@ -6,6 +6,7 @@ import { OrderRepository } from './order';
 import { SupplierRepository } from './supplier';
 import { PaymentRepository } from './payment';
 import { DeliveryRepository } from './delivery';
+import { AddressRepository } from './address';
 
 export {
     UserRepository,
@@ -16,4 +17,5 @@ export {
     SupplierRepository,
     PaymentRepository,
     DeliveryRepository,
+    AddressRepository,
 };

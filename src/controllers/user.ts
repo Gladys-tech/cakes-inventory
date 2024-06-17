@@ -72,7 +72,35 @@ class UserController {
     };
 
     // updating a user
-    public updateUser = async (req: Request, res: Response) => {
+    // public updateUser = async (req: Request, res: Response) => {
+    //     const userId = req.params.id;
+    //     const userData = req.body;
+
+    //     try {
+    //         const updatedUser = await UserService.updateUser(userId, userData);
+
+    //         if (!updatedUser) {
+    //             return res.status(404).json({
+    //                 status: 'NOT_FOUND',
+    //                 message: `User not found with id: ${userId}`,
+    //             });
+    //         }
+
+    //         res.status(200).json({
+    //             status: 'OK',
+    //             user: updatedUser,
+    //         });
+    //     } catch (error) {
+    //         console.error('Error updating user:', error);
+    //         res.status(500).json({
+    //             status: 'INTERNAL_SERVER_ERROR',
+    //             message: 'Error updating user.',
+    //         });
+    //     }
+    // };
+
+
+    public updateUser = async (req: Request, res: Response): Promise<void> => {
         const userId = req.params.id;
         const userData = req.body;
 
@@ -80,10 +108,11 @@ class UserController {
             const updatedUser = await UserService.updateUser(userId, userData);
 
             if (!updatedUser) {
-                return res.status(404).json({
+                res.status(404).json({
                     status: 'NOT_FOUND',
                     message: `User not found with id: ${userId}`,
                 });
+                return;
             }
 
             res.status(200).json({

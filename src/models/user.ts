@@ -17,6 +17,7 @@ import { generateEntityId } from '../utils/generate-entity-id';
 import { Address } from './address'; //importing the address entity here
 import { Shop } from './shop';
 import { Delivery } from './delivery';
+import { Customer } from './customer';
 
 export enum UserRole {
     ADMIN = 'admin',
@@ -135,7 +136,6 @@ export class User extends SoftDeletableEntity {
     resetTokenExpires: Date;
 
     @OneToOne(() => Address, (address) => address.user, { nullable: true })
-    // @JoinColumn()
     @JoinColumn({ name: 'userId' })
     address: Address;
 
@@ -146,6 +146,9 @@ export class User extends SoftDeletableEntity {
     @ManyToMany(() => Shop, (shop) => shop.users)
     @JoinTable()
     shops: Shop[];
+
+    // @OneToMany(() => Customer, (customer) => customer.user)
+    // customers: Customer[];
 
     @BeforeInsert()
     private beforeInsert(): void {
