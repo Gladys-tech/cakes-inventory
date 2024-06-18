@@ -30,7 +30,7 @@ class UserService {
     public getUserById = async (userId: string): Promise<User | null> => {
         const user = await this.userRepository.findOne({
             where: { id: userId },
-            relations: ['shops', 'address'],
+            relations: ['shops', 'address', 'customers'],
         });
         return user || null;
     };

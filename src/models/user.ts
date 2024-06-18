@@ -147,8 +147,8 @@ export class User extends SoftDeletableEntity {
     @JoinTable()
     shops: Shop[];
 
-    // @OneToMany(() => Customer, (customer) => customer.user)
-    // customers: Customer[];
+    @OneToMany(() => Customer, (customer) => customer.user)
+    customers: Customer[];
 
     @BeforeInsert()
     private beforeInsert(): void {

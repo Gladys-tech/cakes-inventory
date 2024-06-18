@@ -63,12 +63,16 @@ export class Customer {
     lastName: string;
 
     // @Index({ unique: true })
-    @Column({nullable: true})
+    @Column({ nullable: true })
     email: string;
 
-    // @ManyToOne(() => User, (user) => user.customers, { nullable: false })
-    // @JoinColumn({ name: 'userId' })
-    // user: User;
+    // must change to nullable false.
+    @ManyToOne(() => User, (user) => user.customers, { nullable: false })
+    @JoinColumn({ name: 'userId' })
+    user: User;
+
+    @Column()
+    userId: string; // Add this column
 
     @Column({ nullable: true })
     location: string;

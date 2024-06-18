@@ -99,7 +99,6 @@ class UserController {
     //     }
     // };
 
-
     public updateUser = async (req: Request, res: Response): Promise<void> => {
         const userId = req.params.id;
         const userData = req.body;

@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { Customer } from '../models/customer';
 import { CustomerRepository } from '../repositories';
+import { Order } from '../models/order';
 
 class CustomerService {
     private readonly customerRepository: typeof CustomerRepository;
@@ -38,6 +39,7 @@ class CustomerService {
             telphone: customerData.telphone,
             isEmailVerified: customerData.isEmailVerified,
             cart: customerData.cart || [], // Initialize cart as an empty array if not provided
+            userId: customerData.userId, // Add userId here
         });
 
         await this.customerRepository.save(newCustomer);
@@ -56,6 +58,11 @@ class CustomerService {
 
         if (!existingCustomer) {
             return null; // Customer not found
+        }
+
+        // Ensure the cart is updated correctly
+        if (customerData.cart) {
+            existingCustomer.cart = customerData.cart;
         }
 
         const updatedCustomer = this.customerRepository.merge(
@@ -83,6 +90,55 @@ class CustomerService {
 
         return customerToDelete;
     };
+
+
+     // Get all orders for a user
+    //  public getOrdersByUserId = async (userId: string): Promise<Order[]> => {
+    //     const customers = await this.customerRepository.find({
+    //         where: { user: { id: userId } },
+    //         relations: ['orders',],
+    //     });
+
+    //     let orders: Order[] = [];
+    //     customers.forEach((customer) => {
+    //         orders = orders.concat(customer.orders);
+    //     });
+
+    //     return orders;
+    // };
+
+
+
+    // public getOrdersByUserId = async (userId: string): Promise<Order[]> => {
+    //     const customers = await this.createQueryBuilder('customer')
+    //         .leftJoinAndSelect('customer.orders', 'order')
+    //         .leftJoinAndSelect('order.product', 'product')
+    //         .where('customer.userId = :userId', { userId })
+    //         .getMany();
+
+    //     const orders: Order[] = customers.reduce((acc, customer) => {
+    //         acc.push(...customer.orders);
+    //         return acc;
+    //     }, []);
+
+    //     return orders;
+    // };
+
+    public async getOrdersByUserId(userId: string): Promise<Order[]> {
+        const customers = await this.customerRepository
+            .createQueryBuilder('customer')
+            .leftJoinAndSelect('customer.orders', 'order')
+            .leftJoinAndSelect('order.product', 'product')
+            .where('customer.userId = :userId', { userId })
+            .getMany();
+
+        const orders: Order[] = customers.reduce((acc, customer) => {
+            acc.push(...customer.orders);
+            return acc;
+        }, []);
+
+        return orders;
+    }
 }
 
 export default new CustomerService();

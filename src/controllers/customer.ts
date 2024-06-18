@@ -127,6 +127,18 @@ class CustomerController {
             });
         }
     };
+
+
+    // Get all orders for a user
+    public getOrdersByUserId = async (req: Request, res: Response): Promise<void> => {
+        const userId = req.params.userId;
+        try {
+            const orders = await CustomerService.getOrdersByUserId(userId);
+            res.status(200).json(orders);
+        } catch (error) {
+            res.status(500).json({ error: 'Internal Server Error' });
+        }
+    };
 }
 
 export default new CustomerController();
