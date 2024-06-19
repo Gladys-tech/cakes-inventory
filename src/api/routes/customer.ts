@@ -24,15 +24,18 @@ export default class CustomerRoutes extends CommonRoutesConfig {
         // Update
         this.app.route('/customers/:id').put(CustomerController.updateCustomer);
 
-
         // Get all orders for a user
-        this.app.route('/users/:userId/orders').get(CustomerController.getOrdersByUserId);
+        this.app
+            .route('/users/:userId/orders')
+            .get(CustomerController.getOrdersByUserId);
 
         // Delete
         this.app
             .route('/customers/:id')
             .delete(CustomerController.deleteCustomer);
 
+        // New route to get customers by userId
+        this.app.route('/customers/:userId').get(CustomerController.getCustomerByUserId);
 
         return this.app;
     }

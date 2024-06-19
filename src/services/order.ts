@@ -62,33 +62,58 @@ class OrderService {
      * Retrieve an order by ID with detailed product information
      */
 
-    public getOrderById = async (orderId: string): Promise<Order | null> => {
+    // public getOrderById = async (orderId: string): Promise<Order | null> => {
+    //     try {
+    //         const order = await this.orderRepository.findOneOrFail({
+    //             where: { id: orderId },
+    //             relations: ['customer', 'product', 'product.shops'],
+    //         });
+
+    //         // Fetch detailed product information for each item in the cart
+    //         const productInfo = await this.productRepository.findOne({
+    //             where: { id: order.product.id }, // Use order.product.id instead of order.customer.cart.productId
+    //         });
+
+    //         // Modify the order object to include detailed product information
+    //         const orderWithProductInfo = {
+    //             ...order,
+    //             product: {
+    //                 ...order.product,
+    //                 productInfo: productInfo || null, // Include product information or null if not found
+    //             },
+    //         };
+
+    //         return orderWithProductInfo;
+    //     } catch (error) {
+    //         console.error('Error retrieving order by ID:', error.message);
+    //         return null;
+    //     }
+    // };
+
+
+    public getOrderById= async(orderId: string): Promise<Order | null> => {
         try {
             const order = await this.orderRepository.findOneOrFail({
                 where: { id: orderId },
-                relations: ['customer', 'product', 'product.shops'],
+                relations: ['product', 'product.supplier', 'product.shops', 'customer'], // Define relations to eager load
             });
 
-            // Fetch detailed product information for each item in the cart
-            const productInfo = await this.productRepository.findOne({
-                where: { id: order.product.id }, // Use order.product.id instead of order.customer.cart.productId
-            });
+            if (order.product) {
+                // Fetch additional details if needed
+                const product = await this.productRepository.findOneOrFail({
+                    where: { id: order.product.id },
+                    relations: ['supplier', 'shops'],
+                });
 
-            // Modify the order object to include detailed product information
-            const orderWithProductInfo = {
-                ...order,
-                product: {
-                    ...order.product,
-                    productInfo: productInfo || null, // Include product information or null if not found
-                },
-            };
+                order.product = product; // Replace order's product with detailed product info
+            }
 
-            return orderWithProductInfo;
+            return order;
         } catch (error) {
-            console.error('Error retrieving order by ID:', error.message);
+            console.error('Error fetching order by ID with product details:', error.message);
             return null;
         }
-    };
+    }
 
     // get orders by shop id.
     public getOrdersByShopId = async (shopId: string): Promise<Order[]> => {

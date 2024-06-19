@@ -129,8 +129,27 @@ class CustomerController {
     };
 
 
+     // Get customer by userId
+     public getCustomerByUserId = async (req: Request, res: Response): Promise<void> => {
+        const { userId } = req.params;
+        try {
+            const customer = await CustomerService.getCustomerByUserId(userId);
+            if (customer) {
+                res.status(200).json(customer);
+            } else {
+                res.status(404).json({ message: 'Customer not found for this userId' });
+            }
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    };
+    
+
     // Get all orders for a user
-    public getOrdersByUserId = async (req: Request, res: Response): Promise<void> => {
+    public getOrdersByUserId = async (
+        req: Request,
+        res: Response
+    ): Promise<void> => {
         const userId = req.params.userId;
         try {
             const orders = await CustomerService.getOrdersByUserId(userId);

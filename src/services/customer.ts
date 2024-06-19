@@ -92,6 +92,14 @@ class CustomerService {
     };
 
 
+    // Get customer by userId
+    public getCustomerByUserId = async (userId: string): Promise<Customer | null> => {
+        const customer = await this.customerRepository.findOne({
+            where: { userId },
+        });
+        return customer || null;
+    };
+
      // Get all orders for a user
     //  public getOrdersByUserId = async (userId: string): Promise<Order[]> => {
     //     const customers = await this.customerRepository.find({
@@ -107,23 +115,7 @@ class CustomerService {
     //     return orders;
     // };
 
-
-
-    // public getOrdersByUserId = async (userId: string): Promise<Order[]> => {
-    //     const customers = await this.createQueryBuilder('customer')
-    //         .leftJoinAndSelect('customer.orders', 'order')
-    //         .leftJoinAndSelect('order.product', 'product')
-    //         .where('customer.userId = :userId', { userId })
-    //         .getMany();
-
-    //     const orders: Order[] = customers.reduce((acc, customer) => {
-    //         acc.push(...customer.orders);
-    //         return acc;
-    //     }, []);
-
-    //     return orders;
-    // };
-
+ 
     public async getOrdersByUserId(userId: string): Promise<Order[]> {
         const customers = await this.customerRepository
             .createQueryBuilder('customer')
