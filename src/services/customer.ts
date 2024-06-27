@@ -91,16 +91,17 @@ class CustomerService {
         return customerToDelete;
     };
 
-
     // Get customer by userId
-    public getCustomerByUserId = async (userId: string): Promise<Customer | null> => {
+    public getCustomerByUserId = async (
+        userId: string
+    ): Promise<Customer | null> => {
         const customer = await this.customerRepository.findOne({
             where: { userId },
         });
         return customer || null;
     };
 
-     // Get all orders for a user
+    // Get all orders for a user
     //  public getOrdersByUserId = async (userId: string): Promise<Order[]> => {
     //     const customers = await this.customerRepository.find({
     //         where: { user: { id: userId } },
@@ -115,7 +116,6 @@ class CustomerService {
     //     return orders;
     // };
 
- 
     public async getOrdersByUserId(userId: string): Promise<Order[]> {
         const customers = await this.customerRepository
             .createQueryBuilder('customer')

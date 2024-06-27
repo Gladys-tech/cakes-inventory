@@ -90,12 +90,16 @@ class OrderService {
     //     }
     // };
 
-
-    public getOrderById= async(orderId: string): Promise<Order | null> => {
+    public getOrderById = async (orderId: string): Promise<Order | null> => {
         try {
             const order = await this.orderRepository.findOneOrFail({
                 where: { id: orderId },
-                relations: ['product', 'product.supplier', 'product.shops', 'customer'], // Define relations to eager load
+                relations: [
+                    'product',
+                    'product.supplier',
+                    'product.shops',
+                    'customer',
+                ], // Define relations to eager load
             });
 
             if (order.product) {
@@ -110,10 +114,13 @@ class OrderService {
 
             return order;
         } catch (error) {
-            console.error('Error fetching order by ID with product details:', error.message);
+            console.error(
+                'Error fetching order by ID with product details:',
+                error.message
+            );
             return null;
         }
-    }
+    };
 
     // get orders by shop id.
     public getOrdersByShopId = async (shopId: string): Promise<Order[]> => {

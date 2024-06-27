@@ -44,10 +44,26 @@ app.use(express.json());
 // Enable CORS with specific origin
 app.use(
     cors({
-        origin: 'http://localhost:3000', // Allow requests from frontend running on port 3000
+        // origin: 'http://localhost:3000', // Allow requests from frontend running on port 3000
+        origin: '*',
         credentials: true, // Include cookies in CORS requests if needed
     })
 );
+
+// const allowedOrigins = ['http://localhost:3000', 'http://your-other-allowed-origin.com'];
+
+// app.use(
+//     cors({
+//         origin: (origin, callback) => {
+//             if (!origin || allowedOrigins.includes(origin)) {
+//                 callback(null, true);
+//             } else {
+//                 callback(new Error('Not allowed by CORS'));
+//             }
+//         },
+//         credentials: true, // Include cookies in CORS requests if needed
+//     })
+// );
 
 // Helmet
 app.use(helmet());

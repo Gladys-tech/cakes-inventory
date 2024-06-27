@@ -35,7 +35,9 @@ export default class CustomerRoutes extends CommonRoutesConfig {
             .delete(CustomerController.deleteCustomer);
 
         // New route to get customers by userId
-        this.app.route('/customers/:userId').get(CustomerController.getCustomerByUserId);
+        this.app
+            .route('/customers/:userId')
+            .get(CustomerController.getCustomerByUserId);
 
         return this.app;
     }

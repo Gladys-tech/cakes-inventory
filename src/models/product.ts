@@ -17,7 +17,7 @@ import { Delivery } from './delivery';
 
 @Entity()
 export class Product {
-    map(arg0: (product: any) => { id: any; name: any; price: any; }): any {
+    map(arg0: (product: any) => { id: any; name: any; price: any }): any {
         throw new Error('Method not implemented.');
     }
     @PrimaryGeneratedColumn('uuid')
