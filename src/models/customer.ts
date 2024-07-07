@@ -74,13 +74,6 @@ export class Customer {
     @Column()
     userId: string; // Add this column
 
-    // @Column()
-    // userId: string; // Foreign key to User
-
-    // @OneToOne(() => User, (user) => user.customer)
-    // @JoinColumn({ name: 'userId' })
-    // user: User;
-
     @Column({ nullable: true })
     location: string;
 

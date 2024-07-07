@@ -101,20 +101,7 @@ class CustomerService {
         return customer || null;
     };
 
-    // Get all orders for a user
-    //  public getOrdersByUserId = async (userId: string): Promise<Order[]> => {
-    //     const customers = await this.customerRepository.find({
-    //         where: { user: { id: userId } },
-    //         relations: ['orders',],
-    //     });
-
-    //     let orders: Order[] = [];
-    //     customers.forEach((customer) => {
-    //         orders = orders.concat(customer.orders);
-    //     });
-
-    //     return orders;
-    // };
+   
 
     public async getOrdersByUserId(userId: string): Promise<Order[]> {
         const customers = await this.customerRepository

@@ -35,7 +35,13 @@ class ProductService {
     ): Promise<Product | null> => {
         const product = await this.productRepository.findOne({
             where: { id: productId },
-            relations: ['shops', 'images', 'supplier', 'orders', 'orders.customer'], // Include the 'shops' relation
+            relations: [
+                'shops',
+                'images',
+                'supplier',
+                'orders',
+                'orders.customer',
+            ], // Include the 'shops' relation
         });
         return product || null;
     };

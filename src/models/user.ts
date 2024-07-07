@@ -150,9 +150,6 @@ export class User extends SoftDeletableEntity {
     @OneToMany(() => Customer, (customer) => customer.user)
     customers: Customer[];
 
-    // @OneToOne(() => Customer, { cascade: true, eager: true })
-    // @JoinColumn()
-    // customer: Customer;
 
     @BeforeInsert()
     private beforeInsert(): void {

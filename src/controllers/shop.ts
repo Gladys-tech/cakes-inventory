@@ -47,9 +47,12 @@ class ShopController {
     // creating a shop
     public createShop = async (req: Request, res: Response) => {
         const shopData = req.body;
-        // const userId = req.user.id;
-        const userId = req.user.userId;
+         const userId = req.user.userId;
         console.log('User ID from request:', userId);
+
+        if (!userId) {
+            return res.status(400).json({ message: 'User ID is missing.' });
+        }
 
         try {
             const newShop = await ShopService.createShop(shopData, userId);
