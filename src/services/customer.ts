@@ -101,8 +101,6 @@ class CustomerService {
         return customer || null;
     };
 
-   
-
     public async getOrdersByUserId(userId: string): Promise<Order[]> {
         const customers = await this.customerRepository
             .createQueryBuilder('customer')

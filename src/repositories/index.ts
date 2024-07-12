@@ -7,6 +7,7 @@ import { SupplierRepository } from './supplier';
 import { PaymentRepository } from './payment';
 import { DeliveryRepository } from './delivery';
 import { AddressRepository } from './address';
+import { ContactRepository } from './contact';
 
 export {
     UserRepository,
@@ -18,4 +19,5 @@ export {
     PaymentRepository,
     DeliveryRepository,
     AddressRepository,
+    ContactRepository,
 };

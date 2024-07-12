@@ -6,6 +6,7 @@ import rateLimit from 'express-rate-limit';
 
 import { CommonRoutesConfig } from './common/routes.config';
 import {
+    ContactRoutes,
     CustomerRoutes,
     DeliveryRoutes,
     OrderRoutes,
@@ -80,6 +81,7 @@ routes.push(new OrderRoutes(app));
 routes.push(new SupplierRoutes(app));
 routes.push(new PaymentRoutes(app));
 routes.push(new DeliveryRoutes(app));
+routes.push(new ContactRoutes(app));
 
 // Health Check
 app.get('/health', (req: Request, res: Response) => {

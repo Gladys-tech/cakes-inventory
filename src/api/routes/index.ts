@@ -6,6 +6,7 @@ import OrderRoutes from './order';
 import SupplierRoutes from './supplier';
 import PaymentRoutes from './payment';
 import DeliveryRoutes from './delivery';
+import ContactRoutes from './contact';
 
 export {
     UserRoutes,
@@ -16,4 +17,5 @@ export {
     SupplierRoutes,
     PaymentRoutes,
     DeliveryRoutes,
+    ContactRoutes,
 };

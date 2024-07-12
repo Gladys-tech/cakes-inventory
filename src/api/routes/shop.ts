@@ -10,7 +10,7 @@ export default class ShopRoutes extends CommonRoutesConfig {
 
     configureRoutes() {
         // Apply authenticateToken middleware to protect these routes
-         this.app.use('/shops', authenticateToken);
+        this.app.use('/shops', authenticateToken);
 
         // Read
         this.app.route('/shops').get(ShopController.getShops);

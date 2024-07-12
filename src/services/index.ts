@@ -6,6 +6,7 @@ import OrderService from './order';
 import SupplierService from './supplier';
 import PaymentService from './payment';
 import DeliveryService from './delivery';
+import ContactService from './contact';
 
 export {
     CustomerService,
@@ -16,4 +17,5 @@ export {
     SupplierService,
     PaymentService,
     DeliveryService,
+    ContactService,
 };

@@ -150,7 +150,6 @@ export class User extends SoftDeletableEntity {
     @OneToMany(() => Customer, (customer) => customer.user)
     customers: Customer[];
 
-
     @BeforeInsert()
     private beforeInsert(): void {
         this.id = generateEntityId(this.id, 'user');
