@@ -18,7 +18,9 @@ class ContactService {
     /**
      * Retrieve a contact by ID
      */
-    public getContactById = async (contactId: string): Promise<Contact | null> => {
+    public getContactById = async (
+        contactId: string
+    ): Promise<Contact | null> => {
         const contact = await this.contactRepository.findOne({
             where: { id: contactId },
         });
@@ -43,7 +45,10 @@ class ContactService {
     /**
      * Update a contact by ID
      */
-    public updateContact = async (contactId: string, contactData: any): Promise<Contact | null> => {
+    public updateContact = async (
+        contactId: string,
+        contactData: any
+    ): Promise<Contact | null> => {
         const existingContact = await this.contactRepository.findOne({
             where: { id: contactId },
         });
@@ -52,7 +57,10 @@ class ContactService {
             return null; // Contact not found
         }
 
-        const updatedContact = this.contactRepository.merge(existingContact, contactData);
+        const updatedContact = this.contactRepository.merge(
+            existingContact,
+            contactData
+        );
         await this.contactRepository.save(updatedContact);
 
         return updatedContact;
@@ -61,7 +69,9 @@ class ContactService {
     /**
      * Delete a contact by ID
      */
-    public deleteContact = async (contactId: string): Promise<Contact | null> => {
+    public deleteContact = async (
+        contactId: string
+    ): Promise<Contact | null> => {
         const contactToDelete = await this.contactRepository.findOne({
             where: { id: contactId },
         });

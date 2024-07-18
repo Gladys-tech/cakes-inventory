@@ -14,7 +14,10 @@ import {
     ProductRoutes,
     ShopRoutes,
     SupplierRoutes,
+    TopSearchProductRoutes,
+    TotalViewsRoutes,
     UserRoutes,
+    VisitorRoutes,
 } from './api/routes';
 import { Logger } from '../logger';
 
@@ -82,6 +85,10 @@ routes.push(new SupplierRoutes(app));
 routes.push(new PaymentRoutes(app));
 routes.push(new DeliveryRoutes(app));
 routes.push(new ContactRoutes(app));
+
+routes.push(new TotalViewsRoutes(app));
+routes.push(new TopSearchProductRoutes(app));
+routes.push(new VisitorRoutes(app));
 
 // Health Check
 app.get('/health', (req: Request, res: Response) => {

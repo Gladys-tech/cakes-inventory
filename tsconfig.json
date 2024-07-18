@@ -5,7 +5,7 @@
         "module": "commonjs",
         "types": ["node"],
         "moduleResolution": "node",
-         "outDir": "./dist",
+        "outDir": "./dist",
         // "outDir": "./build",
         "emitDecoratorMetadata": true,
         "experimentalDecorators": true,

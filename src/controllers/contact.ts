@@ -79,7 +79,10 @@ class ContactController {
         const contactData = req.body;
 
         try {
-            const updatedContact = await ContactService.updateContact(contactId, contactData);
+            const updatedContact = await ContactService.updateContact(
+                contactId,
+                contactData
+            );
 
             if (!updatedContact) {
                 return res.status(404).json({
@@ -106,7 +109,9 @@ class ContactController {
         const contactId = req.params.id;
 
         try {
-            const deletedContact = await ContactService.deleteContact(contactId);
+            const deletedContact = await ContactService.deleteContact(
+                contactId
+            );
 
             if (!deletedContact) {
                 return res.status(404).json({

@@ -7,6 +7,9 @@ import SupplierController from './supplier';
 import PaymentController from './payment';
 import DeliveryController from './delivery';
 import ContactController from './contact';
+import VisitorController from './visitor';
+import TopSearchProductController from './search';
+import TotalViewsController from './views';
 
 export {
     CustomerController,
@@ -18,4 +21,7 @@ export {
     PaymentController,
     DeliveryController,
     ContactController,
+    VisitorController,
+    TopSearchProductController,
+    TotalViewsController,
 };

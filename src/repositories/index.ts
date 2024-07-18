@@ -8,6 +8,9 @@ import { PaymentRepository } from './payment';
 import { DeliveryRepository } from './delivery';
 import { AddressRepository } from './address';
 import { ContactRepository } from './contact';
+import { VisitorRepository } from './visitor';
+import { TopSearchProductRepository } from './search';
+import { TotalViewsRepository } from './views';
 
 export {
     UserRepository,
@@ -20,4 +23,7 @@ export {
     DeliveryRepository,
     AddressRepository,
     ContactRepository,
+    VisitorRepository,
+    TopSearchProductRepository,
+    TotalViewsRepository,
 };

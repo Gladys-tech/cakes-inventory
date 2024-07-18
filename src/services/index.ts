@@ -7,6 +7,9 @@ import SupplierService from './supplier';
 import PaymentService from './payment';
 import DeliveryService from './delivery';
 import ContactService from './contact';
+import VisitorService from './visitor';
+import TopSearchProductService from './search';
+import TotalViewsService from './views';
 
 export {
     CustomerService,
@@ -18,4 +21,7 @@ export {
     PaymentService,
     DeliveryService,
     ContactService,
+    VisitorService,
+    TopSearchProductService,
+    TotalViewsService,
 };
