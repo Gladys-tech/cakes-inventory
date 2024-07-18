@@ -18,7 +18,9 @@ class VisitorService {
     /**
      * Add a new visitor
      */
-    public addVisitor = async (visitorData: Partial<Visitor>): Promise<Visitor> => {
+    public addVisitor = async (
+        visitorData: Partial<Visitor>
+    ): Promise<Visitor> => {
         const newVisitor = this.visitorRepository.create(visitorData);
         return await this.visitorRepository.save(newVisitor);
     };

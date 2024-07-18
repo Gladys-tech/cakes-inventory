@@ -20,7 +20,9 @@ class TopSearchProductController {
     public addTopSearchProduct = async (req: Request, res: Response) => {
         const productData = req.body;
         try {
-            const newProduct = await TopSearchProductService.addProduct(productData);
+            const newProduct = await TopSearchProductService.addProduct(
+                productData
+            );
             res.status(201).json({
                 status: 'CREATED',
                 product: newProduct,

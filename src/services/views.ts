@@ -8,9 +8,7 @@ class TotalViewsService {
         this.totalViewsRepository = TotalViewsRepository;
     }
 
-    public getTotalViews = async (
-        TotalViewsId: string
-    ): Promise<number> => {
+    public getTotalViews = async (TotalViewsId: string): Promise<number> => {
         try {
             const views = await this.totalViewsRepository.findOne({
                 where: { id: TotalViewsId },
@@ -22,9 +20,7 @@ class TotalViewsService {
         }
     };
 
-    public incrementViews = async (
-        TotalViewsId: string
-    ): Promise<number> => {
+    public incrementViews = async (TotalViewsId: string): Promise<number> => {
         try {
             let views = await this.totalViewsRepository.findOne({
                 where: { id: TotalViewsId },

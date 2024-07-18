@@ -8,8 +8,12 @@ export default class TopSearchProductRoutes extends CommonRoutesConfig {
     }
 
     configureRoutes() {
-        this.app.route('/top-search-products').get(TopSearchProductController.getTopSearchProducts);
-        this.app.route('/top-search-products').post(TopSearchProductController.addTopSearchProduct);
+        this.app
+            .route('/top-search-products')
+            .get(TopSearchProductController.getTopSearchProducts);
+        this.app
+            .route('/top-search-products')
+            .post(TopSearchProductController.addTopSearchProduct);
         return this.app;
     }
 }

@@ -5,7 +5,9 @@ class TotalViewsController {
     public getTotalViews = async (req: Request, res: Response) => {
         const TotalViewsId = req.params.id;
         try {
-            const totalViews = await TotalViewsService.getTotalViews(TotalViewsId);
+            const totalViews = await TotalViewsService.getTotalViews(
+                TotalViewsId
+            );
             res.status(200).json({
                 status: 'OK',
                 totalViews,
@@ -21,7 +23,9 @@ class TotalViewsController {
     public incrementViews = async (req: Request, res: Response) => {
         const TotalViewsId = req.params.id;
         try {
-            const updatedViews = await TotalViewsService.incrementViews(TotalViewsId);
+            const updatedViews = await TotalViewsService.incrementViews(
+                TotalViewsId
+            );
             res.status(200).json({
                 status: 'OK',
                 totalViews: updatedViews,

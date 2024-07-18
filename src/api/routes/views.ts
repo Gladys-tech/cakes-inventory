@@ -9,7 +9,9 @@ export default class TotalViewsRoutes extends CommonRoutesConfig {
 
     configureRoutes() {
         this.app.route('/total-views').get(TotalViewsController.getTotalViews);
-        this.app.route('/total-views').post(TotalViewsController.incrementViews);
+        this.app
+            .route('/total-views')
+            .post(TotalViewsController.incrementViews);
         return this.app;
     }
 }

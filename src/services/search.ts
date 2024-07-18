@@ -18,7 +18,9 @@ class TopSearchProductService {
     /**
      * Add a new top search product
      */
-    public addProduct = async (productData: Partial<TopSearchProduct>): Promise<TopSearchProduct> => {
+    public addProduct = async (
+        productData: Partial<TopSearchProduct>
+    ): Promise<TopSearchProduct> => {
         const newProduct = this.topSearchProductRepository.create(productData);
         return await this.topSearchProductRepository.save(newProduct);
     };

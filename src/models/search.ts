@@ -1,9 +1,4 @@
-import {
-    Column,
-    Entity,
-    PrimaryGeneratedColumn,
-    BeforeInsert,
-} from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, BeforeInsert } from 'typeorm';
 
 @Entity()
 export class TopSearchProduct {
