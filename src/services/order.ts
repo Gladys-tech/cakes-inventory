@@ -163,94 +163,206 @@ class OrderService {
      * Create a new order
      */
 
+    // public createOrder = async (
+    //     orderData: any
+    // ): Promise<OrderCreationResponse> => {
+    //     const currentDate = new Date();
+    //     const expectedDeliveryDate = new Date(currentDate);
+    //     expectedDeliveryDate.setDate(currentDate.getDate() + 3);
+
+    //     try {
+    //         // If 'customer' is provided in orderData, find customer.
+    //         if (orderData.customer && orderData.customer.customerId) {
+    //             const customer = await this.customerRepository.findOneOrFail({
+    //                 where: { id: orderData.customer.customerId },
+    //                 // relations: ['cart'], // Load cart relation
+    //             });
+
+    //             // Check if the customer has a cart
+    //             if (customer.cart && customer.cart.length > 0) {
+    //                 const orders: Order[] = [];
+
+    //                 // Loop through the customer's cart
+    //                 for (const cartItem of customer.cart) {
+    //                     const productId = cartItem.productId;
+    //                     const productQuantity = cartItem.quantity;
+
+    //                     try {
+    //                         // Find the product by ID
+    //                         const product =
+    //                             await this.productRepository.findOneOrFail({
+    //                                 where: { id: productId },
+    //                                 relations: ['shops'], // Optionally load related shops
+    //                             });
+
+    //                         // Create a new order instance for the current product
+    //                         const newOrder = this.orderRepository.create({
+    //                             orderValue: product.price * productQuantity, // Use product price multiplied by quantity as order value
+    //                             quantity: productQuantity, // Set quantity to cart item quantity
+    //                             totalCommission:
+    //                                 product.price * productQuantity * 0.2, // Assuming commission is 20% of the total price
+    //                             actualMoney:
+    //                                 product.price * productQuantity * 0.8, // Assuming 80% of the total price is actual money
+    //                             client:
+    //                                 customer.firstName && customer.lastName
+    //                                     ? `${customer.firstName} ${customer.lastName}`
+    //                                     : '', // Set client name from customer data
+    //                             expectedDeliveryDate: expectedDeliveryDate
+    //                                 .toISOString()
+    //                                 .split('T')[0],
+    //                             status: orderData.status,
+    //                             paymentMethod: orderData.paymentMethod,
+    //                             customer: customer, // Set customer for the order
+    //                             product: product, // Set product for the order
+    //                             shops: product.shops, // Set shops for the order
+    //                         });
+
+    //                         // Save the new order to the database
+    //                         const savedOrder = await this.orderRepository.save(
+    //                             newOrder
+    //                         );
+    //                         orders.push(savedOrder);
+
+    //                         // Update product inventory quantity
+    //                         product.inventoryQuantity -= productQuantity;
+    //                         await this.productRepository.save(product);
+    //                     } catch (error) {
+    //                         console.error(
+    //                             'Error creating order for product:',
+    //                             productId,
+    //                             error.message
+    //                         );
+    //                     }
+    //                 }
+
+    //                 // Empty the customer's cart after orders are created
+    //                 customer.cart = [];
+    //                 await this.customerRepository.save(customer);
+
+    //                 return {
+    //                     status: 'Success',
+    //                     orders: orders,
+    //                 };
+    //             } else {
+    //                 // If the cart is empty, throw an error or handle it as needed
+    //                 console.error(
+    //                     'Customer cart is empty. Cannot create orders.'
+    //                 );
+    //                 return {
+    //                     message:
+    //                         'Customer cart is empty. Cannot create orders.',
+    //                     status: 'EmptyCartError',
+    //                 };
+    //             }
+    //         } else {
+    //             // If customer is not provided or not found, return an error
+    //             console.error('Customer not found.');
+    //             return {
+    //                 message: 'Customer not found.',
+    //                 status: 'CustomerNotFoundError',
+    //             };
+    //         }
+    //     } catch (error) {
+    //         console.error('Error creating orders:', error.message);
+    //         return {
+    //             message: 'Error creating orders.',
+    //             status: 'OtherError',
+    //         };
+    //     }
+    // };
+
+
+
+    
+
     public createOrder = async (
         orderData: any
     ): Promise<OrderCreationResponse> => {
         const currentDate = new Date();
         const expectedDeliveryDate = new Date(currentDate);
         expectedDeliveryDate.setDate(currentDate.getDate() + 3);
-
+    
         try {
             // If 'customer' is provided in orderData, find customer.
             if (orderData.customer && orderData.customer.customerId) {
                 const customer = await this.customerRepository.findOneOrFail({
                     where: { id: orderData.customer.customerId },
-                    // relations: ['cart'], // Load cart relation
+                    // relations: ['cart'], // Ensure cart relation is loaded
                 });
-
+    
+                console.log('Customer found:', customer);
+    
                 // Check if the customer has a cart
                 if (customer.cart && customer.cart.length > 0) {
                     const orders: Order[] = [];
-
+    
                     // Loop through the customer's cart
                     for (const cartItem of customer.cart) {
                         const productId = cartItem.productId;
                         const productQuantity = cartItem.quantity;
-
+    
+                        console.log(`Processing cart item - Product ID: ${productId}, Quantity: ${productQuantity}`);
+    
                         try {
                             // Find the product by ID
-                            const product =
-                                await this.productRepository.findOneOrFail({
-                                    where: { id: productId },
-                                    relations: ['shops'], // Optionally load related shops
-                                });
-
+                            const product = await this.productRepository.findOneOrFail({
+                                where: { id: productId },
+                                relations: ['shops'], // Optionally load related shops
+                            });
+    
+                            console.log('Product found:', product);
+    
                             // Create a new order instance for the current product
                             const newOrder = this.orderRepository.create({
                                 orderValue: product.price * productQuantity, // Use product price multiplied by quantity as order value
                                 quantity: productQuantity, // Set quantity to cart item quantity
-                                totalCommission:
-                                    product.price * productQuantity * 0.2, // Assuming commission is 20% of the total price
-                                actualMoney:
-                                    product.price * productQuantity * 0.8, // Assuming 80% of the total price is actual money
-                                client:
-                                    customer.firstName && customer.lastName
-                                        ? `${customer.firstName} ${customer.lastName}`
-                                        : '', // Set client name from customer data
-                                expectedDeliveryDate: expectedDeliveryDate
-                                    .toISOString()
-                                    .split('T')[0],
+                                totalCommission: product.price * productQuantity * 0.2, // Assuming commission is 20% of the total price
+                                actualMoney: product.price * productQuantity * 0.8, // Assuming 80% of the total price is actual money
+                                client: customer.firstName && customer.lastName
+                                    ? `${customer.firstName} ${customer.lastName}`
+                                    : '', // Set client name from customer data
+                                expectedDeliveryDate: expectedDeliveryDate.toISOString().split('T')[0],
                                 status: orderData.status,
                                 paymentMethod: orderData.paymentMethod,
                                 customer: customer, // Set customer for the order
                                 product: product, // Set product for the order
                                 shops: product.shops, // Set shops for the order
                             });
-
+    
+                            console.log('New order created:', newOrder);
+    
                             // Save the new order to the database
-                            const savedOrder = await this.orderRepository.save(
-                                newOrder
-                            );
+                            const savedOrder = await this.orderRepository.save(newOrder);
+                            console.log('Order saved:', savedOrder);
                             orders.push(savedOrder);
-
+    
                             // Update product inventory quantity
                             product.inventoryQuantity -= productQuantity;
                             await this.productRepository.save(product);
+                            console.log('Product inventory updated:', product);
                         } catch (error) {
-                            console.error(
-                                'Error creating order for product:',
-                                productId,
-                                error.message
-                            );
+                            console.error('Error creating order for product:', productId, error.message);
                         }
                     }
-
-                    // Empty the customer's cart after orders are created
-                    customer.cart = [];
-                    await this.customerRepository.save(customer);
-
+    
+                    // Only empty the customer's cart if all orders were processed
+                    if (orders.length === customer.cart.length) {
+                        customer.cart = [];
+                        await this.customerRepository.save(customer);
+                        console.log('Customer cart emptied');
+                    } else {
+                        console.error('Not all orders were created. Cart not emptied.');
+                    }
+    
                     return {
                         status: 'Success',
                         orders: orders,
                     };
                 } else {
                     // If the cart is empty, throw an error or handle it as needed
-                    console.error(
-                        'Customer cart is empty. Cannot create orders.'
-                    );
+                    console.error('Customer cart is empty. Cannot create orders.');
                     return {
-                        message:
-                            'Customer cart is empty. Cannot create orders.',
+                        message: 'Customer cart is empty. Cannot create orders.',
                         status: 'EmptyCartError',
                     };
                 }
@@ -270,6 +382,7 @@ class OrderService {
             };
         }
     };
+    
 
     /**
      * Update an order by ID
